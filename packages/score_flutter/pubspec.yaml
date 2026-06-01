@@ -1,0 +1,19 @@
+name: score_flutter
+description: Flutter GUI for score_system (skeleton only).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+
+resolution: workspace
+
+dependencies:
+  score_core:
+    path: ../score_core
+  score_layout:
+    path: ../score_layout
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

@@ -1,0 +1,40 @@
+name: score_system
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+
+dev_dependencies:
+  melos: ^7.3.0
+
+workspace:
+  - packages/score_core
+  - packages/score_layout
+  - packages/score_io
+  - packages/score_cli
+  - packages/score_tui
+  - packages/score_mcp
+  - packages/score_flutter
+  - tools
+
+melos:
+  scripts:
+    analyze:
+      description: Run dart analyze on all packages
+      exec: dart analyze --fatal-infos
+
+    test:
+      description: Run dart test on all packages with a test/ directory
+      run: dart run melos exec --dir-exists=test -- dart test
+
+    deps_check:
+      description: Verify package dependency boundaries
+      run: dart run tools/dep_checker.dart
+
+    format:
+      description: Check Dart formatting
+      exec: dart format --set-exit-if-changed .
+
+    format_fix:
+      description: Apply Dart formatting
+      exec: dart format .

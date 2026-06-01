@@ -1,0 +1,22 @@
+name: score_tui
+description: Terminal UI for score_system.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+
+resolution: workspace
+
+dependencies:
+  score_core:
+    path: ../score_core
+  score_layout:
+    path: ../score_layout
+  score_io:
+    path: ../score_io
+  dart_console: ^1.1.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

@@ -1,0 +1,21 @@
+name: score_mcp
+description: MCP Server for score_system.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+
+resolution: workspace
+
+dependencies:
+  score_core:
+    path: ../score_core
+  score_layout:
+    path: ../score_layout
+  score_io:
+    path: ../score_io
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

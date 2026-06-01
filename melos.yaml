@@ -1,0 +1,28 @@
+name: score_system
+
+packages:
+  - packages/*
+  - tools
+
+scripts:
+  analyze:
+    description: Run dart analyze on all packages
+    exec: dart analyze --fatal-infos
+
+  test:
+    description: Run dart test on all packages
+    exec: dart test --coverage=coverage
+    packageFilters:
+      dirExists: test
+
+  deps_check:
+    description: Verify package dependency boundaries
+    run: dart run tools/dep_checker.dart
+
+  format:
+    description: Check Dart formatting
+    exec: dart format --set-exit-if-changed .
+
+  format_fix:
+    description: Apply Dart formatting
+    exec: dart format .
