@@ -1,5 +1,4 @@
 import '../ids.dart';
-import '../model/music_event.dart';
 import '../model/score.dart';
 import '../model/voice.dart';
 import 'command.dart';
@@ -30,26 +29,16 @@ final class CommandEngine {
 
   // ── Private navigation helper ──────────────────────────────────────────────
 
-  /// Read-only lookup for pre-validation before structural updates.
   Voice? _findVoice(Score score, PartId partId, StaffId staffId,
-      int measureNumber, VoiceId voiceId) {
-    final partIdx = score.parts.indexWhere((p) => p.id == partId);
-    if (partIdx < 0) return null;
-    final staffIdx =
-        score.parts[partIdx].staves.indexWhere((s) => s.id == staffId);
-    if (staffIdx < 0) return null;
-    return score.parts[partIdx].staves[staffIdx].measures[measureNumber]
-        ?.voices[voiceId];
-  }
+          int measureNumber, VoiceId voiceId) =>
+      score.findPart(partId)?.findStaff(staffId)?.findVoice(measureNumber, voiceId);
 
   // ── AddNote ────────────────────────────────────────────────────────────────
 
   CommandResult _applyAddNote(AddNoteCommand cmd, Score score) {
     final existingVoice = _findVoice(
         score, cmd.partId, cmd.staffId, cmd.measureNumber, cmd.voiceId);
-    if (existingVoice != null &&
-        existingVoice.events
-            .any((e) => e is NoteEvent && e.id == cmd.event.id)) {
+    if (existingVoice != null && existingVoice.containsNote(cmd.event.id)) {
       return CommandFailure(
         scoreBefore: score,
         reason: 'Note "${cmd.event.id.value}" already exists in voice',
@@ -64,7 +53,7 @@ final class CommandEngine {
           cmd.measureNumber,
           (m) => m.updateVoice(
             cmd.voiceId,
-            (v) => v.copyWith(events: v.events.add(cmd.event)),
+            (v) => v.addNote(cmd.event),
           ),
         ),
       ),
@@ -90,8 +79,7 @@ final class CommandEngine {
         reason: 'Part, Staff, Measure, or Voice not found',
       );
     }
-    final eventIndex = existingVoice.events
-        .indexWhere((e) => e is NoteEvent && e.id == cmd.noteId);
+    final eventIndex = existingVoice.indexOfNote(cmd.noteId);
     if (eventIndex < 0) {
       return CommandFailure(
         scoreBefore: score,
@@ -108,7 +96,7 @@ final class CommandEngine {
           cmd.measureNumber,
           (m) => m.updateVoice(
             cmd.voiceId,
-            (v) => v.copyWith(events: v.events.removeAt(eventIndex)),
+            (v) => v.removeNoteAt(eventIndex),
           ),
         ),
       ),
@@ -119,7 +107,7 @@ final class CommandEngine {
   // ── AddPart ────────────────────────────────────────────────────────────────
 
   CommandResult _applyAddPart(AddPartCommand cmd, Score score) {
-    if (score.parts.any((p) => p.id == cmd.part.id)) {
+    if (score.findPart(cmd.part.id) != null) {
       return CommandFailure(
         scoreBefore: score,
         reason: 'Part "${cmd.part.id.value}" already exists',

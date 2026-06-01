@@ -1,10 +1,22 @@
 import 'package:score_core/src/ids.dart';
+import 'package:score_core/src/model/fraction.dart';
 import 'package:score_core/src/model/measure.dart';
+import 'package:score_core/src/model/music_event.dart';
+import 'package:score_core/src/model/note_type.dart';
+import 'package:score_core/src/model/note_value.dart';
 import 'package:score_core/src/model/part.dart';
+import 'package:score_core/src/model/pitch.dart';
 import 'package:score_core/src/model/score.dart';
 import 'package:score_core/src/model/staff.dart';
 import 'package:score_core/src/model/voice.dart';
 import 'package:test/test.dart';
+
+NoteEvent _note(String id) => NoteEvent(
+      id: NoteId(id),
+      pitch: const Pitch(step: Step.c, octave: 4),
+      offset: Fraction.zero,
+      noteValue: const NoteValue(noteType: NoteType.quarter),
+    );
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -193,6 +205,123 @@ void main() {
         (p) => p.updateStaff(const StaffId('no-such-staff'), (s) => s),
       );
       expect(result, isNull);
+    });
+  });
+
+  // ── Score.findPart ───────────────────────────────────────────────────────
+
+  group('Score.findPart', () {
+    test('returns Part when found', () {
+      final part = Part(id: _partId, name: 'Piano');
+      final score = _scoreWith(part);
+      expect(score.findPart(_partId), same(part));
+    });
+
+    test('returns null when not found', () {
+      final score = Score(id: const ScoreId('s'));
+      expect(score.findPart(_partId), isNull);
+    });
+  });
+
+  // ── Part.findStaff ───────────────────────────────────────────────────────
+
+  group('Part.findStaff', () {
+    test('returns Staff when found', () {
+      const staff = Staff(id: StaffId('s1'));
+      final part = _partWith(staff);
+      expect(part.findStaff(_staffId), same(staff));
+    });
+
+    test('returns null when not found', () {
+      final part = Part(id: _partId, name: 'Piano');
+      expect(part.findStaff(_staffId), isNull);
+    });
+  });
+
+  // ── Staff.findVoice ──────────────────────────────────────────────────────
+
+  group('Staff.findVoice', () {
+    test('returns Voice when measure and voice exist', () {
+      const voice = Voice(id: VoiceId('v1'));
+      final measure =
+          Measure(id: const MeasureId('m1')).updateVoice(_voiceId, (v) => voice);
+      final staff = _staffWith(1, measure);
+      expect(staff.findVoice(1, _voiceId), isNotNull);
+    });
+
+    test('returns null when measure does not exist', () {
+      const staff = Staff(id: StaffId('s1'));
+      expect(staff.findVoice(99, _voiceId), isNull);
+    });
+
+    test('returns null when voice does not exist in measure', () {
+      const measure = Measure(id: MeasureId('m1'));
+      final staff = _staffWith(1, measure);
+      expect(staff.findVoice(1, _voiceId), isNull);
+    });
+  });
+
+  // ── Voice.containsNote / indexOfNote ─────────────────────────────────────
+
+  group('Voice.containsNote', () {
+    test('returns true when note present', () {
+      final note = _note('n1');
+      final voice = Voice(id: _voiceId).addNote(note);
+      expect(voice.containsNote(note.id), isTrue);
+    });
+
+    test('returns false when note absent', () {
+      const voice = Voice(id: VoiceId('v1'));
+      expect(voice.containsNote(const NoteId('missing')), isFalse);
+    });
+  });
+
+  group('Voice.indexOfNote', () {
+    test('returns correct index', () {
+      final n1 = _note('n1');
+      final n2 = _note('n2');
+      final voice = Voice(id: _voiceId).addNote(n1).addNote(n2);
+      expect(voice.indexOfNote(n2.id), equals(1));
+    });
+
+    test('returns -1 when not found', () {
+      const voice = Voice(id: VoiceId('v1'));
+      expect(voice.indexOfNote(const NoteId('missing')), equals(-1));
+    });
+  });
+
+  // ── Voice.addNote / removeNoteAt ─────────────────────────────────────────
+
+  group('Voice.addNote', () {
+    test('appends note to events', () {
+      final note = _note('n1');
+      final voice = Voice(id: _voiceId).addNote(note);
+      expect(voice.events.length, equals(1));
+      expect(voice.events[0], same(note));
+    });
+
+    test('does not mutate original', () {
+      const original = Voice(id: VoiceId('v1'));
+      original.addNote(_note('n1'));
+      expect(original.events.isEmpty, isTrue);
+    });
+  });
+
+  group('Voice.removeNoteAt', () {
+    test('removes event at given index', () {
+      final n1 = _note('n1');
+      final n2 = _note('n2');
+      final voice = Voice(id: _voiceId).addNote(n1).addNote(n2);
+      final updated = voice.removeNoteAt(0);
+      expect(updated.events.length, equals(1));
+      expect((updated.events[0] as NoteEvent).id, equals(n2.id));
+    });
+
+    test('does not mutate original', () {
+      final note = _note('n1');
+      final voice = Voice(id: _voiceId).addNote(note);
+      voice.removeNoteAt(0);
+      expect(voice.events.length, equals(1));
     });
   });
 }
