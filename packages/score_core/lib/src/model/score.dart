@@ -50,6 +50,16 @@ final class Score {
     return null;
   }
 
+  /// Returns a new [Score] with the part identified by [id] transformed by
+  /// [updater], or null if no part with that ID exists or [updater] returns null.
+  Score? updatePart(PartId id, Part? Function(Part) updater) {
+    final index = parts.indexWhere((p) => p.id == id);
+    if (index < 0) return null;
+    final updated = updater(parts[index]);
+    if (updated == null) return null;
+    return copyWith(parts: parts.replace(index, updated));
+  }
+
   Score copyWith({
     ScoreId? id,
     String? title,

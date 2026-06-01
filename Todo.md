@@ -13,43 +13,43 @@
 ## Epic 1: 基盤整備
 
 ### E1-S1: monorepo構成
-- [ ] T1: pubspec.yaml workspace設定 `[P0]`
-- [ ] T2: melos.yaml設定 `[P0]`
-- [ ] T3: analysis_options.yaml共有設定 `[P0]`
-- [ ] T4: 各packageの骨格作成 `[P0]`
-- [ ] T5: GitHub Actions CI設定 `[P0]`
+- [x] T1: pubspec.yaml workspace設定 `[P0]`
+- [x] T2: melos.yaml設定 `[P0]`
+- [x] T3: analysis_options.yaml共有設定 `[P0]`
+- [x] T4: 各packageの骨格作成 `[P0]`
+- [x] T5: GitHub Actions CI設定 `[P0]`
 
 ### E1-S3: pre-commit hooks
 - [ ] T8a: `.githooks/pre-commit` に `dart analyze && dart test` を追加 `[P0]`
 - [ ] T8b: `git config core.hooksPath .githooks` をセットアップ手順に記載 `[P0]`
 
 ### E1-S2: dep_checker
-- [ ] T6: dep_checker.dart実装 `[P0]`
-- [ ] T7: CIにdep_checkスクリプト追加 `[P0]`
+- [x] T6: dep_checker.dart実装 `[P0]`
+- [x] T7: CIにdep_checkスクリプト追加 `[P0]`
 
 ---
 
 ## Epic 2: score_core
 
 ### E2-S1: 基本モデル
-- [ ] T8: Pitch / Duration / Fraction `[P0]`
-- [ ] T9: Score / Part / Staff `[P0]`
-- [ ] T10: Measure / Voice / MusicEvent `[P0]`
-- [ ] T11: NoteEvent / RestEvent / ChordEvent `[P0]`
-- [ ] T12: Clef / KeySignature / TimeSignature `[P0]`
-- [ ] T13: Barline / MeasureHeader `[P0]`
+- [x] T8: Pitch / Duration / Fraction `[P0]`
+- [x] T9: Score / Part / Staff `[P0]`
+- [x] T10: Measure / Voice / MusicEvent `[P0]`
+- [x] T11: NoteEvent / RestEvent / ChordEvent `[P0]`
+- [x] T12: KeySignature / TimeSignature `[P0]`
+- [x] T13: Barline / MeasureHeader `[P0]`
 
 ### E2-S2: Edge要素
-- [ ] T14: BeamGroup / Tuplet `[P0]`
-- [ ] T15: Slur / Tie `[P0]`
-- [ ] T16: Articulation / Dynamic / Lyric `[P1]`
+- [x] T14: BeamGroup / Tuplet `[P0]`
+- [x] T15: Slur / Tie `[P0]`
+- [x] T16: Articulation / Dynamic / Lyric `[P1]`
 
 ### E2-S3: Command Engine
-- [ ] T17: Command sealed class `[P0]`
-- [ ] T18: AddNoteCommand / RemoveNoteCommand `[P0]`
-- [ ] T19: CommandEngine.apply / dryRun `[P0]`
-- [ ] T20: CommandHistory（Undo/Redo） `[P0]`
-- [ ] T21: BatchCommand `[P0]`
+- [x] T17: Command sealed class `[P0]`
+- [x] T18: AddNoteCommand / RemoveNoteCommand `[P0]`
+- [x] T19: CommandEngine.apply / dryRun `[P0]`
+- [x] T20: CommandHistory（Undo/Redo） `[P0]`
+- [x] T21: BatchCommand `[P0]`
 - [ ] T22: AuditLog `[P0]`
 
 ### E2-S4: Validation

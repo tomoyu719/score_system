@@ -1,5 +1,4 @@
 import '../ids.dart';
-import '../model/measure.dart';
 import '../model/music_event.dart';
 import '../model/score.dart';
 import '../model/voice.dart';
@@ -29,92 +28,69 @@ final class CommandEngine {
         final BatchCommand c => _applyBatch(c, score),
       };
 
+  // ── Private navigation helper ──────────────────────────────────────────────
+
+  /// Read-only lookup for pre-validation before structural updates.
+  Voice? _findVoice(Score score, PartId partId, StaffId staffId,
+      int measureNumber, VoiceId voiceId) {
+    final partIdx = score.parts.indexWhere((p) => p.id == partId);
+    if (partIdx < 0) return null;
+    final staffIdx =
+        score.parts[partIdx].staves.indexWhere((s) => s.id == staffId);
+    if (staffIdx < 0) return null;
+    return score.parts[partIdx].staves[staffIdx].measures[measureNumber]
+        ?.voices[voiceId];
+  }
+
   // ── AddNote ────────────────────────────────────────────────────────────────
 
   CommandResult _applyAddNote(AddNoteCommand cmd, Score score) {
-    final partIndex = score.parts.indexWhere((p) => p.id == cmd.partId);
-    if (partIndex < 0) {
-      return CommandFailure(
-        scoreBefore: score,
-        reason: 'Part "${cmd.partId.value}" not found',
-      );
-    }
-    final part = score.parts[partIndex];
-
-    final staffIndex = part.staves.indexWhere((s) => s.id == cmd.staffId);
-    if (staffIndex < 0) {
-      return CommandFailure(
-        scoreBefore: score,
-        reason: 'Staff "${cmd.staffId.value}" not found',
-      );
-    }
-    final staff = part.staves[staffIndex];
-
-    final measure =
-        staff.measures[cmd.measureNumber] ?? Measure(id: IdFactory.measure());
-    final voice = measure.voices[cmd.voiceId] ?? Voice(id: cmd.voiceId);
-
-    final isDuplicate =
-        voice.events.any((e) => e is NoteEvent && e.id == cmd.event.id);
-    if (isDuplicate) {
+    final existingVoice = _findVoice(
+        score, cmd.partId, cmd.staffId, cmd.measureNumber, cmd.voiceId);
+    if (existingVoice != null &&
+        existingVoice.events
+            .any((e) => e is NoteEvent && e.id == cmd.event.id)) {
       return CommandFailure(
         scoreBefore: score,
         reason: 'Note "${cmd.event.id.value}" already exists in voice',
       );
     }
 
-    final updatedVoice = voice.copyWith(events: voice.events.add(cmd.event));
-    final updatedMeasure = measure.copyWith(
-      voices: measure.voices.add(cmd.voiceId, updatedVoice),
-    );
-    final updatedStaff = staff.copyWith(
-      measures: staff.measures.add(cmd.measureNumber, updatedMeasure),
-    );
-    final updatedPart =
-        part.copyWith(staves: part.staves.replace(staffIndex, updatedStaff));
-    return CommandSuccess(
-      scoreAfter: score.copyWith(
-        parts: score.parts.replace(partIndex, updatedPart),
+    final updated = score.updatePart(
+      cmd.partId,
+      (p) => p.updateStaff(
+        cmd.staffId,
+        (s) => s.updateMeasure(
+          cmd.measureNumber,
+          (m) => m.updateVoice(
+            cmd.voiceId,
+            (v) => v.copyWith(events: v.events.add(cmd.event)),
+          ),
+        ),
       ),
     );
+    if (updated == null) {
+      return CommandFailure(
+        scoreBefore: score,
+        reason:
+            'Part "${cmd.partId.value}" or Staff "${cmd.staffId.value}" not found',
+      );
+    }
+    return CommandSuccess(scoreAfter: updated);
   }
 
   // ── RemoveNote ─────────────────────────────────────────────────────────────
 
   CommandResult _applyRemoveNote(RemoveNoteCommand cmd, Score score) {
-    final partIndex = score.parts.indexWhere((p) => p.id == cmd.partId);
-    if (partIndex < 0) {
+    final existingVoice = _findVoice(
+        score, cmd.partId, cmd.staffId, cmd.measureNumber, cmd.voiceId);
+    if (existingVoice == null) {
       return CommandFailure(
         scoreBefore: score,
-        reason: 'Part "${cmd.partId.value}" not found',
+        reason: 'Part, Staff, Measure, or Voice not found',
       );
     }
-    final part = score.parts[partIndex];
-
-    final staffIndex = part.staves.indexWhere((s) => s.id == cmd.staffId);
-    if (staffIndex < 0) {
-      return CommandFailure(
-        scoreBefore: score,
-        reason: 'Staff "${cmd.staffId.value}" not found',
-      );
-    }
-    final staff = part.staves[staffIndex];
-    final measure = staff.measures[cmd.measureNumber];
-    if (measure == null) {
-      return CommandFailure(
-        scoreBefore: score,
-        reason: 'Measure ${cmd.measureNumber} not found',
-      );
-    }
-    final voice = measure.voices[cmd.voiceId];
-    if (voice == null) {
-      return CommandFailure(
-        scoreBefore: score,
-        reason: 'Voice "${cmd.voiceId.value}" not found',
-      );
-    }
-
-    final eventIndex = voice.events
+    final eventIndex = existingVoice.events
         .indexWhere((e) => e is NoteEvent && e.id == cmd.noteId);
     if (eventIndex < 0) {
       return CommandFailure(
@@ -123,28 +99,27 @@ final class CommandEngine {
       );
     }
 
-    final updatedVoice =
-        voice.copyWith(events: voice.events.removeAt(eventIndex));
-    final updatedMeasure = measure.copyWith(
-      voices: measure.voices.add(cmd.voiceId, updatedVoice),
-    );
-    final updatedStaff = staff.copyWith(
-      measures: staff.measures.add(cmd.measureNumber, updatedMeasure),
-    );
-    final updatedPart =
-        part.copyWith(staves: part.staves.replace(staffIndex, updatedStaff));
-    return CommandSuccess(
-      scoreAfter: score.copyWith(
-        parts: score.parts.replace(partIndex, updatedPart),
+    // Path is verified above — updatePart cannot return null here.
+    final updated = score.updatePart(
+      cmd.partId,
+      (p) => p.updateStaff(
+        cmd.staffId,
+        (s) => s.updateMeasure(
+          cmd.measureNumber,
+          (m) => m.updateVoice(
+            cmd.voiceId,
+            (v) => v.copyWith(events: v.events.removeAt(eventIndex)),
+          ),
+        ),
       ),
     );
+    return CommandSuccess(scoreAfter: updated!);
   }
 
   // ── AddPart ────────────────────────────────────────────────────────────────
 
   CommandResult _applyAddPart(AddPartCommand cmd, Score score) {
-    final alreadyExists = score.parts.any((p) => p.id == cmd.part.id);
-    if (alreadyExists) {
+    if (score.parts.any((p) => p.id == cmd.part.id)) {
       return CommandFailure(
         scoreBefore: score,
         reason: 'Part "${cmd.part.id.value}" already exists',
@@ -158,32 +133,23 @@ final class CommandEngine {
   // ── AddMeasure ─────────────────────────────────────────────────────────────
 
   CommandResult _applyAddMeasure(AddMeasureCommand cmd, Score score) {
-    final partIndex = score.parts.indexWhere((p) => p.id == cmd.partId);
-    if (partIndex < 0) {
-      return CommandFailure(
-        scoreBefore: score,
-        reason: 'Part "${cmd.partId.value}" not found',
-      );
-    }
-    final part = score.parts[partIndex];
-    final staffIndex = part.staves.indexWhere((s) => s.id == cmd.staffId);
-    if (staffIndex < 0) {
-      return CommandFailure(
-        scoreBefore: score,
-        reason: 'Staff "${cmd.staffId.value}" not found',
-      );
-    }
-    final staff = part.staves[staffIndex];
-    final updatedStaff = staff.copyWith(
-      measures: staff.measures.add(cmd.measureNumber, cmd.measure),
-    );
-    final updatedPart =
-        part.copyWith(staves: part.staves.replace(staffIndex, updatedStaff));
-    return CommandSuccess(
-      scoreAfter: score.copyWith(
-        parts: score.parts.replace(partIndex, updatedPart),
+    final updated = score.updatePart(
+      cmd.partId,
+      (p) => p.updateStaff(
+        cmd.staffId,
+        (s) => s.copyWith(
+          measures: s.measures.add(cmd.measureNumber, cmd.measure),
+        ),
       ),
     );
+    if (updated == null) {
+      return CommandFailure(
+        scoreBefore: score,
+        reason:
+            'Part "${cmd.partId.value}" or Staff "${cmd.staffId.value}" not found',
+      );
+    }
+    return CommandSuccess(scoreAfter: updated);
   }
 
   // ── Batch ──────────────────────────────────────────────────────────────────
@@ -202,5 +168,4 @@ final class CommandEngine {
     }
     return CommandSuccess(scoreAfter: current);
   }
-
 }

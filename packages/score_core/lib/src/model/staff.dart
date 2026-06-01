@@ -22,6 +22,13 @@ final class Staff {
   /// Measures keyed by 1-based measure number.
   final IMap<int, Measure> measures;
 
+  /// Returns a new [Staff] with the measure at [measureNumber] transformed by
+  /// [updater]. Creates an empty [Measure] if that number does not yet exist.
+  Staff updateMeasure(int measureNumber, Measure Function(Measure) updater) {
+    final existing = measures[measureNumber] ?? Measure(id: IdFactory.measure());
+    return copyWith(measures: measures.add(measureNumber, updater(existing)));
+  }
+
   Staff copyWith({
     StaffId? id,
     StaffType? staffType,
