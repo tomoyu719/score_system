@@ -58,3 +58,6 @@ export 'src/command/audit_log.dart';
 export 'src/validation/validation_error.dart';
 export 'src/validation/validation_result.dart';
 export 'src/validation/validator.dart';
+
+// JSON conversion
+export 'src/json/score_json_converter.dart';
