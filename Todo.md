@@ -105,30 +105,30 @@
 ## Epic 4: score_layout
 
 ### E4-S1: 基盤
-- [ ] T46: BoundingBox `[P1]`
-- [ ] T47: LayoutElement sealed class `[P1]`
-- [ ] T48: LayoutTree `[P1]`
+- [x] T46: BoundingBox `[P1]`
+- [x] T47: LayoutElement sealed class `[P1]`
+- [x] T48: LayoutTree `[P1]`
 
 ### E4-S2: spacing
-- [ ] T49: NoteLayout（X/Y計算） `[P1]`
-- [ ] T50: MeasureSpacingEngine `[P1]`
-- [ ] T51: StaffSpacingEngine `[P1]`
+- [x] T49: NoteLayout（X/Y計算） `[P1]`
+- [x] T50: MeasureSpacingEngine `[P1]`
+- [x] T51: StaffSpacingEngine `[P1]`
 
 ### E4-S3: voice layout
-- [ ] T52: StemDirection決定 `[P1]`
-- [ ] T53: RestPositioning `[P1]`
-- [ ] T54: SharedNotehead検出 `[P1]`
+- [x] T52: StemDirection決定 `[P1]`
+- [x] T53: RestPositioning `[P1]`
+- [x] T54: SharedNotehead検出 `[P1]`
 
 ### E4-S4: collision
-- [ ] T55: CollisionDetector `[P1]`
-- [ ] T56: CollisionReport `[P1]`
-- [ ] T57: CollisionResolver `[P1]`
-- [ ] T58: ManualOverride対応 `[P1]`
+- [x] T55: CollisionDetector `[P1]`
+- [x] T56: CollisionReport `[P1]`
+- [x] T57: CollisionResolver `[P1]`
+- [x] T58: ManualOverride対応 `[P1]`
 
 ### E4-S5: golden test
-- [ ] T59: golden test基盤 `[P1]`
-- [ ] T60: 主要golden JSON作成 `[P1]`
-- [ ] T61: incremental layout基盤 `[P1]`
+- [x] T59: golden test基盤 `[P1]`
+- [x] T60: 主要golden JSON作成 `[P1]`
+- [x] T61: incremental layout基盤 `[P1]`
 
 ---
 
