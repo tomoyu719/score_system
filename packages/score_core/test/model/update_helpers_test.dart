@@ -223,6 +223,52 @@ void main() {
     });
   });
 
+  // ── Score.findVoice ──────────────────────────────────────────────────────
+
+  group('Score.findVoice', () {
+    test('returns Voice when full path exists', () {
+      const voice = Voice(id: VoiceId('v1'));
+      final measure =
+          Measure(id: const MeasureId('m1')).updateVoice(_voiceId, (v) => voice);
+      final staff = _staffWith(1, measure);
+      final part = _partWith(staff);
+      final score = _scoreWith(part);
+      expect(score.findVoice(_partId, _staffId, 1, _voiceId), isNotNull);
+    });
+
+    test('returns null when Part not found', () {
+      final score = Score(id: const ScoreId('s'));
+      expect(
+          score.findVoice(
+              const PartId('x'), _staffId, 1, _voiceId),
+          isNull);
+    });
+
+    test('returns null when Staff not found', () {
+      final part = Part(id: _partId, name: 'Piano');
+      final score = _scoreWith(part);
+      expect(
+          score.findVoice(_partId, const StaffId('x'), 1, _voiceId), isNull);
+    });
+
+    test('returns null when measure not found', () {
+      const staff = Staff(id: StaffId('s1'));
+      final part = _partWith(staff);
+      final score = _scoreWith(part);
+      expect(score.findVoice(_partId, _staffId, 99, _voiceId), isNull);
+    });
+
+    test('returns null when Voice not found', () {
+      const measure = Measure(id: MeasureId('m1'));
+      final staff = _staffWith(1, measure);
+      final part = _partWith(staff);
+      final score = _scoreWith(part);
+      expect(
+          score.findVoice(_partId, _staffId, 1, const VoiceId('missing')),
+          isNull);
+    });
+  });
+
   // ── Part.findStaff ───────────────────────────────────────────────────────
 
   group('Part.findStaff', () {

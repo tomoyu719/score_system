@@ -1,6 +1,4 @@
-import '../ids.dart';
 import '../model/score.dart';
-import '../model/voice.dart';
 import 'command.dart';
 import 'command_result.dart';
 
@@ -27,18 +25,12 @@ final class CommandEngine {
         final BatchCommand c => _applyBatch(c, score),
       };
 
-  // ── Private navigation helper ──────────────────────────────────────────────
-
-  Voice? _findVoice(Score score, PartId partId, StaffId staffId,
-          int measureNumber, VoiceId voiceId) =>
-      score.findPart(partId)?.findStaff(staffId)?.findVoice(measureNumber, voiceId);
-
   // ── AddNote ────────────────────────────────────────────────────────────────
 
   CommandResult _applyAddNote(AddNoteCommand cmd, Score score) {
-    final existingVoice = _findVoice(
-        score, cmd.partId, cmd.staffId, cmd.measureNumber, cmd.voiceId);
-    if (existingVoice != null && existingVoice.containsNote(cmd.event.id)) {
+    final voice = score.findVoice(
+        cmd.partId, cmd.staffId, cmd.measureNumber, cmd.voiceId);
+    if (voice != null && voice.containsNote(cmd.event.id)) {
       return CommandFailure(
         scoreBefore: score,
         reason: 'Note "${cmd.event.id.value}" already exists in voice',
@@ -71,15 +63,15 @@ final class CommandEngine {
   // ── RemoveNote ─────────────────────────────────────────────────────────────
 
   CommandResult _applyRemoveNote(RemoveNoteCommand cmd, Score score) {
-    final existingVoice = _findVoice(
-        score, cmd.partId, cmd.staffId, cmd.measureNumber, cmd.voiceId);
-    if (existingVoice == null) {
+    final voice = score.findVoice(
+        cmd.partId, cmd.staffId, cmd.measureNumber, cmd.voiceId);
+    if (voice == null) {
       return CommandFailure(
         scoreBefore: score,
         reason: 'Part, Staff, Measure, or Voice not found',
       );
     }
-    final eventIndex = existingVoice.indexOfNote(cmd.noteId);
+    final eventIndex = voice.indexOfNote(cmd.noteId);
     if (eventIndex < 0) {
       return CommandFailure(
         scoreBefore: score,
