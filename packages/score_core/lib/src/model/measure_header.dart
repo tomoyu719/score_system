@@ -1,4 +1,5 @@
 import 'barline.dart';
+import 'fraction.dart';
 import 'key_signature.dart';
 import 'tempo.dart';
 import 'time_signature.dart';
@@ -19,6 +20,9 @@ final class MeasureHeader {
   /// 1-based measure number.
   final int measureNumber;
   final TimeSignature timeSignature;
+
+  /// Total notated duration of one measure under this header's time signature.
+  Fraction get measureDuration => timeSignature.measureDuration;
   final KeySignature keySignature;
   final Tempo? tempo;
   final BarlineType barlineStart;

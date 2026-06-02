@@ -22,31 +22,19 @@ final class Validator {
   // ── T24: Voice duration must not exceed the measure's time signature ────────
 
   void _checkVoiceOverflow(Score score, List<ValidationError> errors) {
-    for (final part in score.parts) {
-      for (final staff in part.staves) {
-        for (final entry in staff.measures.entries) {
-          final measureNumber = entry.key;
-          final measure = entry.value;
-          final header = score.headerForMeasure(measureNumber);
-          if (header == null) continue;
-          final limit = header.timeSignature.measureDuration;
-
-          for (final voiceEntry in measure.voices.entries) {
-            final voice = voiceEntry.value;
-            if (voice.totalDuration > limit) {
-              errors.add(ValidationError(
-                code: 'VOICE_OVERFLOW',
-                message:
-                    'Voice duration ${voice.totalDuration} exceeds measure '
-                    'limit $limit in measure $measureNumber',
-                partId: part.id.value,
-                staffId: staff.id.value,
-                measureNumber: measureNumber,
-                voiceId: voice.id.value,
-              ));
-            }
-          }
-        }
+    for (final ctx in score.allVoices) {
+      final header = score.headerForMeasure(ctx.measureNumber);
+      if (header == null) continue;
+      if (ctx.voice.totalDuration > header.measureDuration) {
+        errors.add(ValidationError(
+          code: 'VOICE_OVERFLOW',
+          message: 'Voice duration ${ctx.voice.totalDuration} exceeds measure '
+              'limit ${header.measureDuration} in measure ${ctx.measureNumber}',
+          partId: ctx.partId.value,
+          staffId: ctx.staffId.value,
+          measureNumber: ctx.measureNumber,
+          voiceId: ctx.voiceId.value,
+        ));
       }
     }
   }
@@ -54,29 +42,20 @@ final class Validator {
   // ── T25: All NoteEvents must be within MIDI pitch range 0–127 ──────────────
 
   void _checkPitchRange(Score score, List<ValidationError> errors) {
-    for (final part in score.parts) {
-      for (final staff in part.staves) {
-        for (final entry in staff.measures.entries) {
-          final measureNumber = entry.key;
-          for (final voiceEntry in entry.value.voices.entries) {
-            final voice = voiceEntry.value;
-            for (final event in voice.events) {
-              if (event is! NoteEvent) continue;
-              final midi = event.pitch.midiPitch;
-              if (midi < 0 || midi > 127) {
-                errors.add(ValidationError(
-                  code: 'PITCH_OUT_OF_RANGE',
-                  message:
-                      'Note "${event.id.value}" has MIDI pitch $midi '
-                      '(must be 0–127)',
-                  partId: part.id.value,
-                  staffId: staff.id.value,
-                  measureNumber: measureNumber,
-                  voiceId: voice.id.value,
-                ));
-              }
-            }
-          }
+    for (final ctx in score.allVoices) {
+      for (final event in ctx.voice.events) {
+        if (event is! NoteEvent) continue;
+        final midi = event.pitch.midiPitch;
+        if (midi < 0 || midi > 127) {
+          errors.add(ValidationError(
+            code: 'PITCH_OUT_OF_RANGE',
+            message: 'Note "${event.id.value}" has MIDI pitch $midi '
+                '(must be 0–127)',
+            partId: ctx.partId.value,
+            staffId: ctx.staffId.value,
+            measureNumber: ctx.measureNumber,
+            voiceId: ctx.voiceId.value,
+          ));
         }
       }
     }

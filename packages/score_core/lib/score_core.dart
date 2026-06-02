@@ -44,6 +44,7 @@ export 'src/model/tuplet.dart';
 
 // Model — root aggregate
 export 'src/model/score.dart';
+export 'src/model/voice_context.dart';
 
 // Commands
 export 'src/command/command.dart'; // re-exports all command subclasses via parts

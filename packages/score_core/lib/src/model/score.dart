@@ -8,6 +8,7 @@ import 'slur.dart';
 import 'tie.dart';
 import 'tuplet.dart';
 import 'voice.dart';
+import 'voice_context.dart';
 
 /// The root aggregate of a music score.
 final class Score {
@@ -49,6 +50,26 @@ final class Score {
       if (h.measureNumber == measureNumber) return h;
     }
     return null;
+  }
+
+  /// Lazily yields every [VoiceContext] in the score, in part → staff →
+  /// measure → voice order. Callers need no knowledge of the hierarchy shape.
+  Iterable<VoiceContext> get allVoices sync* {
+    for (final part in parts) {
+      for (final staff in part.staves) {
+        for (final measureEntry in staff.measures.entries) {
+          for (final voiceEntry in measureEntry.value.voices.entries) {
+            yield VoiceContext(
+              partId: part.id,
+              staffId: staff.id,
+              measureNumber: measureEntry.key,
+              voiceId: voiceEntry.key,
+              voice: voiceEntry.value,
+            );
+          }
+        }
+      }
+    }
   }
 
   /// Returns the [Part] with the given [id], or null if not found.
