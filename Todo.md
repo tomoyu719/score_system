@@ -79,21 +79,21 @@
 ## Epic 3: score_io
 
 ### E3-S1: native format
-- [ ] T35: Score.toJson / Score.fromJson `[P0]`
-- [ ] T36: Fraction ↔ String変換 `[P0]`
-- [ ] T37: schema migration基盤 `[P0]`
+- [x] T35: Score.toJson / Score.fromJson `[P0]`
+- [x] T36: Fraction ↔ String変換 `[P0]`
+- [x] T37: schema migration基盤 `[P0]`
 
 ### E3-S2: MusicXML
-- [ ] T38: MusicXML DOMパーサー `[P0]`
-- [ ] T39: note / rest / chord import `[P0]`
-- [ ] T40: beam / tuplet / slur / tie import `[P0]`
-- [ ] T41: dynamic / lyric / articulation import `[P0]`
-- [ ] T42: MusicXML export generator `[P0]`
-- [ ] T43: roundtripテスト `[P0]`
+- [x] T38: MusicXML DOMパーサー `[P0]`
+- [x] T39: note / rest / chord import `[P0]`
+- [x] T40: beam / tuplet / slur / tie import `[P0]`
+- [x] T41: dynamic / lyric / articulation import `[P0]`
+- [x] T42: MusicXML export generator `[P0]`
+- [x] T43: roundtripテスト `[P0]`
 
 ### E3-S3: MIDI
-- [ ] T44: MIDI SMF Type 1 encoder `[P0]`
-- [ ] T45: MIDI JSON dump `[P0]`
+- [x] T44: MIDI SMF Type 1 encoder `[P0]`
+- [x] T45: MIDI JSON dump `[P0]`
 
 ### 将来対応（score_io）
 - [ ] MIDI SMF Type 0 export（`--type 0` オプション） `[v1]`
