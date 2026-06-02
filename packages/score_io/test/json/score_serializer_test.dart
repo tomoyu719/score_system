@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:score_core/score_core.dart';
 import 'package:score_io/score_io.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const serializer = ScoreSerializer();
 
   Score emptyScore() => Score(
         id: const ScoreId('score-1'),
@@ -15,8 +16,8 @@ void main() {
   group('ScoreSerializer', () {
     test('empty score roundtrips through toJson/fromJson', () {
       final score = emptyScore();
-      final json = serializer.toJson(score);
-      final restored = serializer.fromJson(json);
+      final json = ScoreIo.toJsonString(score);
+      final restored = ScoreIo.fromJsonString(json);
 
       expect(restored.id, equals(score.id));
       expect(restored.title, equals(score.title));
@@ -31,7 +32,7 @@ void main() {
         title: 'Symphony No. 5',
         composer: 'Beethoven',
       );
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       expect(restored.title, equals('Symphony No. 5'));
       expect(restored.composer, equals('Beethoven'));
     });
@@ -48,7 +49,7 @@ void main() {
         id: const ScoreId('score-3'),
         measureHeaders: IList([header]),
       );
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       expect(restored.measureHeaders.length, equals(1));
       final h = restored.measureHeaders[0];
       expect(h.measureNumber, equals(1));
@@ -71,7 +72,7 @@ void main() {
         id: const ScoreId('score-4'),
         measureHeaders: IList([header]),
       );
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       final h = restored.measureHeaders[0];
       expect(h.tempo, isNotNull);
       expect(h.tempo!.bpm, equals(120.0));
@@ -109,7 +110,7 @@ void main() {
         id: const ScoreId('score-5'),
         parts: IList([part]),
       );
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       final rPart = restored.parts[0];
       final rStaff = rPart.staves[0];
       final rMeasure = rStaff.measures[1]!;
@@ -141,7 +142,7 @@ void main() {
       final part = Part(id: const PartId('p1'), name: 'Piano', staves: IList([staff]));
       final score = Score(id: const ScoreId('score-6'), parts: IList([part]));
 
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       final rRest = restored.parts[0].staves[0].measures[1]!.voices[voiceId]!.events[0] as RestEvent;
       expect(rRest.id, equals(const RestId('rest-1')));
       expect(rRest.isFullMeasure, isTrue);
@@ -178,7 +179,7 @@ void main() {
       final part = Part(id: const PartId('p1'), name: 'Guitar', staves: IList([staff]));
       final score = Score(id: const ScoreId('score-7'), parts: IList([part]));
 
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       final rChord = restored.parts[0].staves[0].measures[1]!.voices[voiceId]!.events[0] as ChordEvent;
       expect(rChord.id, equals(const ChordId('chord-1')));
       expect(rChord.notes.length, equals(2));
@@ -195,7 +196,7 @@ void main() {
         id: const ScoreId('score-8'),
         beamGroups: IList([bg]),
       );
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       expect(restored.beamGroups.length, equals(1));
       final rBg = restored.beamGroups[0];
       expect(rBg.id, equals(const BeamGroupId('bg-1')));
@@ -214,7 +215,7 @@ void main() {
         id: const ScoreId('score-9'),
         slurs: IList([slur]),
       );
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       expect(restored.slurs.length, equals(1));
       final rSlur = restored.slurs[0];
       expect(rSlur.id, equals(const SlurId('slur-1')));
@@ -233,7 +234,7 @@ void main() {
         id: const ScoreId('score-10'),
         ties: IList([tie]),
       );
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       expect(restored.ties.length, equals(1));
       final rTie = restored.ties[0];
       expect(rTie.id, equals(const TieId('tie-1')));
@@ -251,7 +252,7 @@ void main() {
         id: const ScoreId('score-11'),
         tuplets: IList([tuplet]),
       );
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       expect(restored.tuplets.length, equals(1));
       final rTuplet = restored.tuplets[0];
       expect(rTuplet.id, equals(const TupletId('tuplet-1')));
@@ -261,7 +262,7 @@ void main() {
 
     test('schema_version is 1 in serialized output', () {
       final score = emptyScore();
-      final map = serializer.toMap(score);
+      final map = jsonDecode(ScoreIo.toJsonString(score)) as Map<String, Object?>;
       expect(map[r'$schema_version'], equals(1));
     });
 
@@ -283,7 +284,7 @@ void main() {
       final part = Part(id: const PartId('p1'), name: 'Oboe', staves: IList([staff]));
       final score = Score(id: const ScoreId('score-12'), parts: IList([part]));
 
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       final rNote = restored.parts[0].staves[0].measures[1]!.voices[voiceId]!.events[0] as NoteEvent;
       expect(rNote.articulations.length, equals(2));
       expect(rNote.articulations[0].type, equals(ArticulationType.staccato));
@@ -310,7 +311,7 @@ void main() {
       final part = Part(id: const PartId('p1'), name: 'Soprano', staves: IList([staff]));
       final score = Score(id: const ScoreId('score-13'), parts: IList([part]));
 
-      final restored = serializer.fromJson(serializer.toJson(score));
+      final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
       final rNote = restored.parts[0].staves[0].measures[1]!.voices[voiceId]!.events[0] as NoteEvent;
       expect(rNote.lyrics.length, equals(2));
       expect(rNote.lyrics[0].text, equals('hel'));

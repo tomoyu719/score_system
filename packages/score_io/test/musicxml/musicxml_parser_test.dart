@@ -32,8 +32,6 @@ const _attrs4_4 = '''<attributes>
 </attributes>''';
 
 void main() {
-  final parser = MusicXmlParser();
-
   group('MusicXmlParser', () {
     test('parses empty score with title and composer', () {
       final xml = _wrap(
@@ -41,7 +39,7 @@ void main() {
         title: 'My Song',
         composer: 'Jane Doe',
       );
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       expect(score.title, equals('My Song'));
       expect(score.composer, equals('Jane Doe'));
@@ -55,7 +53,7 @@ void main() {
           <time><beats>3</beats><beat-type>4</beat-type></time>
         </attributes>
       '''));
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       expect(score.measureHeaders, hasLength(1));
       final h = score.measureHeaders[0];
@@ -76,7 +74,7 @@ void main() {
           <staff>1</staff>
         </note>
       '''));
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       final part = score.parts[0];
       final staff = part.staves[0];
@@ -102,7 +100,7 @@ void main() {
           <staff>1</staff>
         </note>
       '''));
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       final voice = score.parts[0].staves[0].measures[1]!.voices[const VoiceId('1')]!;
       expect(voice.events, hasLength(1));
@@ -123,7 +121,7 @@ void main() {
           <staff>1</staff>
         </note>
       '''));
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       final voice = score.parts[0].staves[0].measures[1]!.voices[const VoiceId('1')]!;
       final event = voice.events[0] as NoteEvent;
@@ -150,7 +148,7 @@ void main() {
           <staff>1</staff>
         </note>
       '''));
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       final voice = score.parts[0].staves[0].measures[1]!.voices[const VoiceId('1')]!;
       expect(voice.events, hasLength(1));
@@ -176,7 +174,7 @@ void main() {
           </direction-type>
         </direction>
       '''));
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       final voice = score.parts[0].staves[0].measures[1]!.voices[const VoiceId('1')]!;
       expect(voice.events, hasLength(1));
@@ -198,7 +196,7 @@ void main() {
           </direction-type>
         </direction>
       '''));
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       expect(score.measureHeaders, hasLength(1));
       final h = score.measureHeaders[0];
@@ -214,7 +212,7 @@ void main() {
           <bar-style>light-heavy</bar-style>
         </barline>
       '''));
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       final h = score.measureHeaders[0];
       expect(h.barlineEnd, equals(BarlineType.finalBar));
@@ -242,7 +240,7 @@ void main() {
           </note>
         ''', number: 2)}
       ''');
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       expect(score.measureHeaders, hasLength(2));
       final staff = score.parts[0].staves[0];
@@ -276,7 +274,7 @@ void main() {
   </part>
 </score-partwise>''';
 
-      final score = parser.parse(xml);
+      final score = ScoreIo.parseMusicXml(xml);
 
       expect(score.parts, hasLength(2));
       expect(score.parts[0].name, equals('Violin'));

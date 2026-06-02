@@ -168,11 +168,9 @@ Uint8List _trackData(Uint8List bytes, int trackOffset) {
 }
 
 void main() {
-  final encoder = MidiEncoder();
-
   group('MidiEncoder', () {
     test('empty score produces valid MIDI header', () {
-      final bytes = encoder.encode(_emptyScore());
+      final bytes = ScoreIo.encodeMidi(_emptyScore());
       expect(bytes[0], equals(0x4D)); // 'M'
       expect(bytes[1], equals(0x54)); // 'T'
       expect(bytes[2], equals(0x68)); // 'h'
@@ -182,22 +180,22 @@ void main() {
     });
 
     test('empty score has 1 track (tempo track only)', () {
-      final bytes = encoder.encode(_emptyScore());
+      final bytes = ScoreIo.encodeMidi(_emptyScore());
       expect(_readUint16(bytes, 10), equals(1)); // num tracks
     });
 
     test('score with one part has 2 tracks', () {
-      final bytes = encoder.encode(_scoreWithOnePart());
+      final bytes = ScoreIo.encodeMidi(_scoreWithOnePart());
       expect(_readUint16(bytes, 10), equals(2));
     });
 
     test('ticks per quarter note is 480', () {
-      final bytes = encoder.encode(_emptyScore());
+      final bytes = ScoreIo.encodeMidi(_emptyScore());
       expect(_readUint16(bytes, 12), equals(480));
     });
 
     test('tempo track contains correct tempo event for 120 bpm', () {
-      final bytes = encoder.encode(_scoreWithOnePart());
+      final bytes = ScoreIo.encodeMidi(_scoreWithOnePart());
       final trackOffsets = _findTrackOffsets(bytes);
       final data = _trackData(bytes, trackOffsets[0]);
       // Find 0xFF 0x51 0x03 sequence
@@ -215,7 +213,7 @@ void main() {
     });
 
     test('default tempo is 120 bpm when no measure headers', () {
-      final bytes = encoder.encode(_emptyScore());
+      final bytes = ScoreIo.encodeMidi(_emptyScore());
       final trackOffsets = _findTrackOffsets(bytes);
       final data = _trackData(bytes, trackOffsets[0]);
       var found = false;
@@ -232,7 +230,7 @@ void main() {
     });
 
     test('all tracks end with end-of-track meta', () {
-      final bytes = encoder.encode(_scoreWithOnePart());
+      final bytes = ScoreIo.encodeMidi(_scoreWithOnePart());
       final trackOffsets = _findTrackOffsets(bytes);
       for (final offset in trackOffsets) {
         final data = _trackData(bytes, offset);
@@ -244,7 +242,7 @@ void main() {
     });
 
     test('quarter note produces note on and note off 480 ticks apart', () {
-      final bytes = encoder.encode(_scoreWithQuarterNoteC4());
+      final bytes = ScoreIo.encodeMidi(_scoreWithQuarterNoteC4());
       final trackOffsets = _findTrackOffsets(bytes);
       // track 1 is the music track
       final data = _trackData(bytes, trackOffsets[1]);
@@ -289,7 +287,7 @@ void main() {
     });
 
     test('note MIDI pitch is correct — C4 = 60', () {
-      final bytes = encoder.encode(_scoreWithQuarterNoteC4());
+      final bytes = ScoreIo.encodeMidi(_scoreWithQuarterNoteC4());
       final trackOffsets = _findTrackOffsets(bytes);
       final data = _trackData(bytes, trackOffsets[1]);
 
@@ -322,7 +320,7 @@ void main() {
     });
 
     test('rest produces no note events', () {
-      final bytes = encoder.encode(_scoreWithRestOnly());
+      final bytes = ScoreIo.encodeMidi(_scoreWithRestOnly());
       final trackOffsets = _findTrackOffsets(bytes);
       final data = _trackData(bytes, trackOffsets[1]);
 
@@ -351,7 +349,7 @@ void main() {
     });
 
     test('whole note produces note off at 1920 ticks from start', () {
-      final bytes = encoder.encode(_scoreWithWholeNoteC4());
+      final bytes = ScoreIo.encodeMidi(_scoreWithWholeNoteC4());
       final trackOffsets = _findTrackOffsets(bytes);
       final data = _trackData(bytes, trackOffsets[1]);
 

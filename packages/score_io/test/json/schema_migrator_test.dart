@@ -1,5 +1,5 @@
 import 'package:score_core/score_core.dart';
-import 'package:score_io/score_io.dart';
+import 'package:score_io/src/json/schema_migrator.dart';
 import 'package:test/test.dart';
 
 void main() {

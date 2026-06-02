@@ -23,8 +23,8 @@ void main() {
         composer: 'Test Composer',
       );
       final path = '${tempDir.path}/test.score.json';
-      await ScoreJsonFile.save(score, path);
-      final loaded = await ScoreJsonFile.load(path);
+      await ScoreIo.saveJson(score, path);
+      final loaded = await ScoreIo.loadJson(path);
       expect(loaded.id, equals(score.id));
       expect(loaded.title, equals(score.title));
       expect(loaded.composer, equals(score.composer));
@@ -36,7 +36,7 @@ void main() {
         title: 'Indent Test',
       );
       final path = '${tempDir.path}/indent.score.json';
-      await ScoreJsonFile.save(score, path);
+      await ScoreIo.saveJson(score, path);
       final content = File(path).readAsStringSync();
       expect(content, contains('  "id"'));
     });
@@ -44,7 +44,7 @@ void main() {
     test('load non-existent file throws ScoreException', () async {
       final path = '${tempDir.path}/does_not_exist.score.json';
       expect(
-        () => ScoreJsonFile.load(path),
+        () => ScoreIo.loadJson(path),
         throwsA(isA<ScoreException>()),
       );
     });

@@ -136,16 +136,14 @@ List<Map<String, Object?>> _trackEvents(
 }
 
 void main() {
-  final dumper = MidiJsonDump();
-
   group('MidiJsonDump', () {
     test('empty score dump has ticksPerQuarterNote', () {
-      final result = dumper.dump(_emptyScore());
+      final result = ScoreIo.dumpMidi(_emptyScore());
       expect(result['ticksPerQuarterNote'], equals(480));
     });
 
     test('empty score has tempo track only', () {
-      final result = dumper.dump(_emptyScore());
+      final result = ScoreIo.dumpMidi(_emptyScore());
       final tracks = result['tracks'] as List;
       expect(tracks.length, equals(1));
       final track = tracks[0] as Map<String, Object?>;
@@ -154,7 +152,7 @@ void main() {
     });
 
     test('default tempo is 120 bpm', () {
-      final result = dumper.dump(_emptyScore());
+      final result = ScoreIo.dumpMidi(_emptyScore());
       final events = _trackEvents(result, 0);
       final tempoEvent =
           events.firstWhere((e) => e['type'] == 'tempo');
@@ -163,7 +161,7 @@ void main() {
     });
 
     test('score with part creates track for part', () {
-      final result = dumper.dump(_scoreWithOnePart());
+      final result = ScoreIo.dumpMidi(_scoreWithOnePart());
       final tracks = result['tracks'] as List;
       expect(tracks.length, equals(2));
       final partTrack = tracks[1] as Map<String, Object?>;
@@ -172,7 +170,7 @@ void main() {
     });
 
     test('note event appears as noteOn and noteOff with correct ticks', () {
-      final result = dumper.dump(_scoreWithQuarterNoteC4());
+      final result = ScoreIo.dumpMidi(_scoreWithQuarterNoteC4());
       final events = _trackEvents(result, 1);
       final noteOns = events.where((e) => e['type'] == 'noteOn').toList();
       final noteOffs = events.where((e) => e['type'] == 'noteOff').toList();
@@ -181,14 +179,14 @@ void main() {
     });
 
     test('noteOn tick matches offset (0 for first note)', () {
-      final result = dumper.dump(_scoreWithQuarterNoteC4());
+      final result = ScoreIo.dumpMidi(_scoreWithQuarterNoteC4());
       final events = _trackEvents(result, 1);
       final noteOn = events.firstWhere((e) => e['type'] == 'noteOn');
       expect(noteOn['tick'], equals(0));
     });
 
     test('noteOff tick = noteOn tick + duration ticks (480 for quarter)', () {
-      final result = dumper.dump(_scoreWithQuarterNoteC4());
+      final result = ScoreIo.dumpMidi(_scoreWithQuarterNoteC4());
       final events = _trackEvents(result, 1);
       final noteOn = events.firstWhere((e) => e['type'] == 'noteOn');
       final noteOff = events.firstWhere((e) => e['type'] == 'noteOff');
@@ -199,7 +197,7 @@ void main() {
     });
 
     test('rest does not produce note events', () {
-      final result = dumper.dump(_scoreWithRestOnly());
+      final result = ScoreIo.dumpMidi(_scoreWithRestOnly());
       final events = _trackEvents(result, 1);
       final noteEvents =
           events.where((e) => e['type'] == 'noteOn' || e['type'] == 'noteOff');
@@ -207,7 +205,7 @@ void main() {
     });
 
     test('chord produces noteOn for each note', () {
-      final result = dumper.dump(_scoreWithChordC4E4());
+      final result = ScoreIo.dumpMidi(_scoreWithChordC4E4());
       final events = _trackEvents(result, 1);
       final noteOns = events.where((e) => e['type'] == 'noteOn').toList();
       expect(noteOns.length, equals(2));
@@ -216,13 +214,13 @@ void main() {
     });
 
     test('tempo track ends with endOfTrack event', () {
-      final result = dumper.dump(_emptyScore());
+      final result = ScoreIo.dumpMidi(_emptyScore());
       final events = _trackEvents(result, 0);
       expect(events.last['type'], equals('endOfTrack'));
     });
 
     test('part track ends with endOfTrack event', () {
-      final result = dumper.dump(_scoreWithQuarterNoteC4());
+      final result = ScoreIo.dumpMidi(_scoreWithQuarterNoteC4());
       final events = _trackEvents(result, 1);
       expect(events.last['type'], equals('endOfTrack'));
     });

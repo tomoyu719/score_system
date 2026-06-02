@@ -47,10 +47,8 @@ MeasureHeader _defaultHeader({int measureNumber = 1, Tempo? tempo}) =>
     );
 
 void main() {
-  final exporter = MusicXmlExporter();
-  final parser = MusicXmlParser();
-
-  Score roundtrip(Score score) => parser.parse(exporter.export(score));
+  Score roundtrip(Score score) =>
+      ScoreIo.parseMusicXml(ScoreIo.exportMusicXml(score));
 
   group('MusicXML roundtrip', () {
     test('note roundtrip: parse → export → parse produces same pitch/noteValue', () {

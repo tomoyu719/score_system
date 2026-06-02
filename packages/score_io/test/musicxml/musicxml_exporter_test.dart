@@ -64,8 +64,6 @@ Part _partWithNote({
 }
 
 void main() {
-  final exporter = MusicXmlExporter();
-
   group('MusicXmlExporter', () {
     test('exports empty score with title', () {
       final score = _scoreWith(
@@ -73,7 +71,7 @@ void main() {
         composer: 'Test Composer',
         headers: [_header()],
       );
-      final xml = exporter.export(score);
+      final xml = ScoreIo.exportMusicXml(score);
 
       expect(xml, contains('<movement-title>Test Title</movement-title>'));
       expect(xml, contains('Test Composer'));
@@ -82,7 +80,7 @@ void main() {
 
     test('exported XML contains valid UTF-8 declaration', () {
       final score = _scoreWith(headers: [_header()]);
-      final xml = exporter.export(score);
+      final xml = ScoreIo.exportMusicXml(score);
 
       expect(xml, startsWith('<?xml'));
       expect(xml.toLowerCase(), contains('encoding="utf-8"'));
@@ -104,7 +102,7 @@ void main() {
           ),
         ],
       );
-      final xml = exporter.export(score);
+      final xml = ScoreIo.exportMusicXml(score);
 
       expect(xml, contains('<beats>3</beats>'));
       expect(xml, contains('<beat-type>4</beat-type>'));
@@ -123,7 +121,7 @@ void main() {
         headers: [_header()],
         parts: [_partWithNote(note: note)],
       );
-      final xml = exporter.export(score);
+      final xml = ScoreIo.exportMusicXml(score);
       final doc = XmlDocument.parse(xml);
 
       final durationEl = doc.findAllElements('duration').first;
@@ -146,7 +144,7 @@ void main() {
         headers: [_header()],
         parts: [_partWithNote(rest: rest)],
       );
-      final xml = exporter.export(score);
+      final xml = ScoreIo.exportMusicXml(score);
       final doc = XmlDocument.parse(xml);
 
       expect(doc.findAllElements('rest'), isNotEmpty);
@@ -167,7 +165,7 @@ void main() {
         headers: [_header()],
         parts: [_partWithNote(note: note)],
       );
-      final xml = exporter.export(score);
+      final xml = ScoreIo.exportMusicXml(score);
       final doc = XmlDocument.parse(xml);
 
       expect(doc.findAllElements('dot'), isNotEmpty);
@@ -191,7 +189,7 @@ void main() {
           ),
         ],
       );
-      final xml = exporter.export(score);
+      final xml = ScoreIo.exportMusicXml(score);
 
       expect(xml, contains('light-heavy'));
     });
@@ -214,7 +212,7 @@ void main() {
           ),
         ],
       );
-      final xml = exporter.export(score);
+      final xml = ScoreIo.exportMusicXml(score);
 
       expect(xml, contains('<beat-unit>quarter</beat-unit>'));
       expect(xml, contains('<per-minute>96'));
