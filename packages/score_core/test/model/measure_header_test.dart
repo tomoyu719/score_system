@@ -124,5 +124,14 @@ void main() {
       );
       expect(h1, equals(h2));
     });
+
+    test('measureDuration delegates to timeSignature', () {
+      final h = MeasureHeader(
+        measureNumber: 1,
+        timeSignature: const TimeSignature(beats: 3, beatType: 4),
+        keySignature: ks,
+      );
+      expect(h.measureDuration, equals(Fraction(3, 4)));
+    });
   });
 }

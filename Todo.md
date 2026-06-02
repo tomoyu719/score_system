@@ -20,8 +20,8 @@
 - [x] T5: GitHub Actions CI設定 `[P0]`
 
 ### E1-S3: pre-commit hooks
-- [ ] T8a: `.githooks/pre-commit` に `dart analyze && dart test` を追加 `[P0]`
-- [ ] T8b: `git config core.hooksPath .githooks` をセットアップ手順に記載 `[P0]`
+- [x] T8a: `.githooks/pre-commit` に `dart analyze && dart test` を追加 `[P0]`
+- [x] T8b: `git config core.hooksPath .githooks` をセットアップ手順に記載 `[P0]`
 
 ### E1-S2: dep_checker
 - [x] T6: dep_checker.dart実装 `[P0]`
@@ -50,13 +50,13 @@
 - [x] T19: CommandEngine.apply / dryRun `[P0]`
 - [x] T20: CommandHistory（Undo/Redo） `[P0]`
 - [x] T21: BatchCommand `[P0]`
-- [ ] T22: AuditLog `[P0]`
+- [x] T22: AuditLog `[P0]`
 
 ### E2-S4: Validation
-- [ ] T23: Validator基盤 `[P0]`
-- [ ] T24: 拍子整合性ルール `[P0]`
-- [ ] T25: 音域バリデーション `[P0]`
-- [ ] T26: ValidationResult JSON serialize `[P0]`
+- [x] T23: Validator基盤 `[P0]`
+- [x] T24: 拍子整合性ルール `[P0]`
+- [x] T25: 音域バリデーション `[P0]`
+- [x] T26: ValidationResult JSON serialize `[P0]`
 
 ### E2-S5: TAB model
 - [ ] T27: TabConfig / TabFret `[P1]`

@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+dart run melos exec --dir-exists=test -- dart analyze --fatal-infos
+dart run melos exec --dir-exists=test -- dart test

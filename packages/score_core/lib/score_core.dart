@@ -44,6 +44,7 @@ export 'src/model/tuplet.dart';
 
 // Model — root aggregate
 export 'src/model/score.dart';
+export 'src/model/voice_context.dart';
 
 // Commands
 export 'src/command/command.dart'; // re-exports all command subclasses via parts
@@ -51,3 +52,9 @@ export 'src/command/command_result.dart';
 export 'src/command/command_engine.dart';
 export 'src/command/command_record.dart';
 export 'src/command/score_history.dart';
+export 'src/command/audit_log.dart';
+
+// Validation
+export 'src/validation/validation_error.dart';
+export 'src/validation/validation_result.dart';
+export 'src/validation/validator.dart';
