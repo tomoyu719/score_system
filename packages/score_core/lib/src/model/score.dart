@@ -7,6 +7,7 @@ import 'part.dart';
 import 'slur.dart';
 import 'tie.dart';
 import 'tuplet.dart';
+import 'voice.dart';
 
 /// The root aggregate of a music score.
 final class Score {
@@ -49,6 +50,17 @@ final class Score {
     }
     return null;
   }
+
+  /// Returns the [Part] with the given [id], or null if not found.
+  Part? findPart(PartId id) {
+    final index = parts.indexWhere((p) => p.id == id);
+    return index < 0 ? null : parts[index];
+  }
+
+  /// Returns the [Voice] at the given address, or null if any step is missing.
+  Voice? findVoice(
+          PartId partId, StaffId staffId, int measureNumber, VoiceId voiceId) =>
+      findPart(partId)?.findStaff(staffId)?.findVoice(measureNumber, voiceId);
 
   /// Returns a new [Score] with the part identified by [id] transformed by
   /// [updater], or null if no part with that ID exists or [updater] returns null.

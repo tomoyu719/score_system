@@ -17,6 +17,12 @@ final class Part {
   final String shortName;
   final IList<Staff> staves;
 
+  /// Returns the [Staff] with the given [id], or null if not found.
+  Staff? findStaff(StaffId id) {
+    final index = staves.indexWhere((s) => s.id == id);
+    return index < 0 ? null : staves[index];
+  }
+
   /// Returns a new [Part] with the staff identified by [id] transformed by
   /// [updater], or null if no staff with that ID exists or [updater] returns null.
   Part? updateStaff(StaffId id, Staff? Function(Staff) updater) {
