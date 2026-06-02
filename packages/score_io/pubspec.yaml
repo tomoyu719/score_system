@@ -11,6 +11,8 @@ resolution: workspace
 dependencies:
   score_core:
     path: ../score_core
+  fast_immutable_collections: ^11.2.0
+  xml: ^6.5.0
 
 dev_dependencies:
   lints: ^6.0.0
