@@ -9,6 +9,7 @@ environment:
 resolution: workspace
 
 dependencies:
+  fast_immutable_collections: ^11.2.0
   score_core:
     path: ../score_core
 
