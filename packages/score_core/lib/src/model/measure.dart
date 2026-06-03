@@ -15,6 +15,9 @@ final class Measure {
   /// Voices keyed by VoiceId.
   final IMap<VoiceId, Voice> voices;
 
+  /// All voices in this measure, in insertion order.
+  Iterable<Voice> get allVoices => voices.values;
+
   /// Returns a new [Measure] with the voice identified by [id] transformed by
   /// [updater]. Creates an empty [Voice] if that ID does not yet exist.
   Measure updateVoice(VoiceId id, Voice Function(Voice) updater) {

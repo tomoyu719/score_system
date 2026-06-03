@@ -54,17 +54,17 @@ final class LayoutEngine {
 
           // Use the widest voice to determine measure width.
           var mWidth = measureSpacing.minMeasureWidth;
-          for (final voice in measure.voices.values) {
+          for (final voice in measure.allVoices) {
             final w = measureSpacing.measureWidth(voice);
             if (w > mWidth) mWidth = w;
           }
 
           // Build shared offset→x map across all voices (cross-voice alignment).
-          final offsetX = measureSpacing.xPositions(measure.voices.values);
+          final offsetX = measureSpacing.xPositions(measure.allVoices);
 
           final elements = <LayoutElement>[];
 
-          for (final voice in measure.voices.values) {
+          for (final voice in measure.allVoices) {
             for (final event in voice.events) {
               _layoutEvent(
                 event: event,
@@ -166,15 +166,15 @@ final class LayoutEngine {
           }
 
           var mWidth = measureSpacing.minMeasureWidth;
-          for (final voice in scoreMeasure.voices.values) {
+          for (final voice in scoreMeasure.allVoices) {
             final w = measureSpacing.measureWidth(voice);
             if (w > mWidth) mWidth = w;
           }
 
-          final offsetX = measureSpacing.xPositions(scoreMeasure.voices.values);
+          final offsetX = measureSpacing.xPositions(scoreMeasure.allVoices);
 
           final elements = <LayoutElement>[];
-          for (final voice in scoreMeasure.voices.values) {
+          for (final voice in scoreMeasure.allVoices) {
             for (final event in voice.events) {
               _layoutEvent(
                 event: event,
