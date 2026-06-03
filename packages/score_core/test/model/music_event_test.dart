@@ -135,6 +135,26 @@ void main() {
     });
   });
 
+  group('MusicEvent.duration', () {
+    test('quarter note returns 1/4', () {
+      expect(_note().duration, equals(Fraction(1, 4)));
+    });
+
+    test('dotted quarter returns 3/8', () {
+      final e = _note(noteValue: NoteValue(noteType: NoteType.quarter, dots: 1));
+      expect(e.duration, equals(Fraction(3, 8)));
+    });
+
+    test('whole rest returns 1/1', () {
+      final rest = RestEvent(
+        id: const RestId('r1'),
+        offset: Fraction.zero,
+        noteValue: NoteValue(noteType: NoteType.whole),
+      );
+      expect(rest.duration, equals(Fraction(1, 1)));
+    });
+  });
+
   group('MusicEvent sealed type', () {
     test('switch is exhaustive over all subtypes', () {
       final MusicEvent event = _note();

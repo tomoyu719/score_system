@@ -22,4 +22,7 @@ sealed class MusicEvent {
 
   /// Duration of this event.
   final NoteValue noteValue;
+
+  /// Actual duration in whole-note units.
+  Fraction get duration => noteValue.toFraction();
 }
