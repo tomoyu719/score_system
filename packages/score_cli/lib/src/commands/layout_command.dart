@@ -52,36 +52,4 @@ final class LayoutCommand {
     return 0;
   }
 
-  Future<int> runFixCollisions(ArgResults args, OutputWriter output) async {
-    final inPath = args['in'] as String?;
-    final outPath = args['out'] as String?;
-    if (inPath == null || inPath.isEmpty) {
-      output.writeError('--in is required', code: 1);
-      return 1;
-    }
-    if (outPath == null || outPath.isEmpty) {
-      output.writeError('--out is required', code: 1);
-      return 1;
-    }
-
-    try {
-      final score = await ScoreIo.loadJson(inPath);
-      final tree = const LayoutEngine().layout(score);
-      final elements = tree.allElements().toList();
-      final result = const CollisionResolver().resolve(elements);
-
-      await ScoreIo.saveJson(score, outPath);
-
-      final resolved = elements.length - result.remaining.length;
-      output.writeSuccess({
-        'resolved': resolved,
-        'remaining': result.remaining.length,
-      });
-
-      return result.remaining.isEmpty ? 0 : 3;
-    } catch (e) {
-      output.writeError('Collision resolution failed: $e', code: 1);
-      return 1;
-    }
-  }
 }

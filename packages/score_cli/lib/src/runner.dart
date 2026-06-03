@@ -37,8 +37,6 @@ final class ScoreRunner {
         return _runLayout(rest, output);
       case 'collisions':
         return _runCollisions(rest, output);
-      case 'fix-collisions':
-        return _runFixCollisions(rest, output);
       case 'inspect':
         return _runInspect(rest, output);
       case 'diff':
@@ -165,22 +163,6 @@ final class ScoreRunner {
     }
 
     return const LayoutCommand().runCollisions(parsed, output);
-  }
-
-  Future<int> _runFixCollisions(List<String> args, OutputWriter output) async {
-    final parser = ArgParser()
-      ..addOption('in')
-      ..addOption('out');
-
-    final ArgResults parsed;
-    try {
-      parsed = parser.parse(args);
-    } catch (e) {
-      output.writeError('Invalid arguments: $e', code: 1);
-      return 1;
-    }
-
-    return const LayoutCommand().runFixCollisions(parsed, output);
   }
 
   Future<int> _runInspect(List<String> args, OutputWriter output) async {

@@ -46,16 +46,4 @@ void main() {
     });
   });
 
-  group('score fix-collisions', () {
-    test('empty score resolves with exit 0', () async {
-      final inPath = await saveEmptyScore();
-      final outPath = '${tempDir.path}/fixed.score.json';
-      final exitCode = await ScoreRunner().run([
-        'fix-collisions',
-        '--in', inPath,
-        '--out', outPath,
-      ]);
-      expect(exitCode, equals(0));
-    });
-  });
 }
