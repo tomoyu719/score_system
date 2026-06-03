@@ -8,6 +8,7 @@ export 'src/layout_engine.dart';
 export 'src/spacing/note_layout.dart';
 export 'src/spacing/measure_spacing_engine.dart';
 export 'src/spacing/staff_spacing_engine.dart';
+export 'src/spacing/staff_extents.dart';
 export 'src/voice/stem_direction.dart';
 export 'src/voice/rest_positioning.dart';
 export 'src/voice/shared_notehead_detector.dart';
