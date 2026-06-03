@@ -21,7 +21,7 @@ final class MeasureSpacingEngine {
     final quarter = Fraction(1, 4);
     var total = 0.0;
     for (final event in voice.events) {
-      final dur = event.noteValue.toFraction();
+      final dur = event.duration;
       total += noteSpacing * (dur / quarter).toDouble();
     }
     return total < minMeasureWidth ? minMeasureWidth : total;

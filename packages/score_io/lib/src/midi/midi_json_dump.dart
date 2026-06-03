@@ -59,7 +59,7 @@ final class MidiJsonDump {
             final onTick =
                 measureStartTick + _fractionToTicks(event.offset);
             final offTick =
-                onTick + _fractionToTicks(event.noteValue.toFraction());
+                onTick + _fractionToTicks(event.duration);
 
             switch (event) {
               case NoteEvent():

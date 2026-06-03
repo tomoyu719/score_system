@@ -17,7 +17,7 @@ final class Voice {
   /// Total notated duration of all events in this voice.
   Fraction get totalDuration => events.fold(
         Fraction.zero,
-        (acc, e) => acc + e.noteValue.toFraction(),
+        (acc, e) => acc + e.duration,
       );
 
   /// Returns true if this voice contains a [NoteEvent] with the given [id].

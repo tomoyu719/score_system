@@ -83,7 +83,7 @@ final class MidiEncoder {
             final offsetTicks =
                 _fractionToTicks(event.offset);
             final durationTicks =
-                _fractionToTicks(event.noteValue.toFraction());
+                _fractionToTicks(event.duration);
             final onTick = measureStartTick + offsetTicks;
             final offTick = onTick + durationTicks;
 

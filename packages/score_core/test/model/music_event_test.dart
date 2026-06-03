@@ -32,7 +32,7 @@ void main() {
       );
       expect(n.pitch.step, equals(Step.a));
       expect(n.offset, equals(Fraction(1, 4)));
-      expect(n.noteValue.toFraction(), equals(Fraction(1, 4)));
+      expect(n.duration, equals(Fraction(1, 4)));
     });
 
     test('copyWith changes only specified fields', () {
