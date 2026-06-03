@@ -13,5 +13,3 @@ export 'src/voice/rest_positioning.dart';
 export 'src/voice/shared_notehead_detector.dart';
 export 'src/collision/collision_detector.dart';
 export 'src/collision/collision_report.dart';
-export 'src/collision/collision_resolver.dart';
-export 'src/collision/manual_override.dart';
