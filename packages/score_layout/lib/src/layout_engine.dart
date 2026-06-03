@@ -28,7 +28,7 @@ final class LayoutEngine {
 
   /// Computes the full [LayoutTree] for [score].
   LayoutTree layout(Score score) {
-    if (score.parts.isEmpty) {
+    if (score.isEmpty) {
       return LayoutTree(
         parts: const IListConst([]),
         bounds: const BoundingBox(x: 0, y: 0, width: 0, height: 0),

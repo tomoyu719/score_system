@@ -18,6 +18,17 @@ void main() {
       expect(_emptyScore().parts.isEmpty, isTrue);
     });
 
+    test('isEmpty is true when no parts', () {
+      expect(_emptyScore().isEmpty, isTrue);
+    });
+
+    test('isEmpty is false when parts exist', () {
+      final score = _emptyScore().copyWith(
+        parts: IList([Part(id: const PartId('p1'), name: 'Piano')]),
+      );
+      expect(score.isEmpty, isFalse);
+    });
+
     test('title defaults to empty', () {
       expect(_emptyScore().title, isEmpty);
     });

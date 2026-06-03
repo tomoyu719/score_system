@@ -44,6 +44,9 @@ final class Score {
   /// Tuplet groups referencing notes by ID.
   final IList<Tuplet> tuplets;
 
+  /// True when the score has no parts.
+  bool get isEmpty => parts.isEmpty;
+
   /// Returns the [MeasureHeader] for the given 1-based measure number, or null.
   MeasureHeader? headerForMeasure(int measureNumber) {
     for (final h in measureHeaders) {
