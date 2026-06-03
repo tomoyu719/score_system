@@ -8,6 +8,8 @@ import 'package:test/test.dart';
 // The measure width is minMeasureWidth=20sp (4 quarter notes × 4sp = 16sp < 20sp floor).
 // X positions for notes at offsets 0, 1/4, 1/2, 3/4 of 20sp:
 //   0/1 * 20 = 0, 1/4 * 20 = 5, 1/2 * 20 = 10, 3/4 * 20 = 15
+// noteWidth(quarter) = minNoteWidth(1.5) + noteSpacing(4.0) * sqrt(1) = 5.5 sp
+// 4 quarters → total 22.0 sp; xPositions: 0.0, 5.5, 11.0, 16.5
 const _goldenJson = r'''
 {
   "parts": [
@@ -16,7 +18,7 @@ const _goldenJson = r'''
       "bounds": {
         "x": 0.0,
         "y": 0.0,
-        "width": 20.0,
+        "width": 22.0,
         "height": 4.0
       },
       "staves": [
@@ -25,7 +27,7 @@ const _goldenJson = r'''
           "bounds": {
             "x": 0.0,
             "y": 0.0,
-            "width": 20.0,
+            "width": 22.0,
             "height": 4.0
           },
           "measures": [
@@ -34,7 +36,7 @@ const _goldenJson = r'''
               "bounds": {
                 "x": 0.0,
                 "y": 0.0,
-                "width": 20.0,
+                "width": 22.0,
                 "height": 4.0
               },
               "elements": [
@@ -73,7 +75,7 @@ const _goldenJson = r'''
                   "staffLine": -1.0,
                   "isManualOverride": false,
                   "bounds": {
-                    "x": 5.0,
+                    "x": 5.5,
                     "y": 0.0,
                     "width": 1.0,
                     "height": 1.0
@@ -86,7 +88,7 @@ const _goldenJson = r'''
                   "direction": "up",
                   "isManualOverride": false,
                   "bounds": {
-                    "x": 5.0,
+                    "x": 5.5,
                     "y": 0.0,
                     "width": 0.1,
                     "height": 3.5
@@ -100,7 +102,7 @@ const _goldenJson = r'''
                   "staffLine": 0.0,
                   "isManualOverride": false,
                   "bounds": {
-                    "x": 10.0,
+                    "x": 11.0,
                     "y": 0.0,
                     "width": 1.0,
                     "height": 1.0
@@ -113,7 +115,7 @@ const _goldenJson = r'''
                   "direction": "up",
                   "isManualOverride": false,
                   "bounds": {
-                    "x": 10.0,
+                    "x": 11.0,
                     "y": 0.0,
                     "width": 0.1,
                     "height": 3.5
@@ -127,7 +129,7 @@ const _goldenJson = r'''
                   "staffLine": 1.0,
                   "isManualOverride": false,
                   "bounds": {
-                    "x": 15.0,
+                    "x": 16.5,
                     "y": 0.0,
                     "width": 1.0,
                     "height": 1.0
@@ -140,7 +142,7 @@ const _goldenJson = r'''
                   "direction": "up",
                   "isManualOverride": false,
                   "bounds": {
-                    "x": 15.0,
+                    "x": 16.5,
                     "y": 0.0,
                     "width": 0.1,
                     "height": 3.5
@@ -156,7 +158,7 @@ const _goldenJson = r'''
   "bounds": {
     "x": 0.0,
     "y": 0.0,
-    "width": 20.0,
+    "width": 22.0,
     "height": 4.0
   }
 }''';

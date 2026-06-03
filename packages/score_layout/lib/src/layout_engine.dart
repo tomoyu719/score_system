@@ -51,16 +51,16 @@ final class LayoutEngine {
 
         for (final mNum in measureNumbers) {
           final measure = staff.measures[mNum]!;
-          final header = score.headerForMeasure(mNum);
-          final measureDuration =
-              header?.measureDuration ?? Fraction(1, 1);
 
           // Use the widest voice to determine measure width.
           var mWidth = measureSpacing.minMeasureWidth;
           for (final voice in measure.voices.values) {
-            final w = measureSpacing.measureWidth(voice, measureDuration);
+            final w = measureSpacing.measureWidth(voice);
             if (w > mWidth) mWidth = w;
           }
+
+          // Build shared offset→x map across all voices (cross-voice alignment).
+          final offsetX = measureSpacing.xPositions(measure.voices.values);
 
           final elements = <LayoutElement>[];
 
@@ -70,8 +70,7 @@ final class LayoutEngine {
                 event: event,
                 measureX: measureX,
                 staffY: staffY,
-                measureWidth: mWidth,
-                measureDuration: measureDuration,
+                offsetX: offsetX,
                 elements: elements,
               );
             }
@@ -166,14 +165,13 @@ final class LayoutEngine {
             return lm;
           }
 
-          final header = score.headerForMeasure(measureNumber);
-          final measureDuration = header?.measureDuration ?? Fraction(1, 1);
-
           var mWidth = measureSpacing.minMeasureWidth;
           for (final voice in scoreMeasure.voices.values) {
-            final w = measureSpacing.measureWidth(voice, measureDuration);
+            final w = measureSpacing.measureWidth(voice);
             if (w > mWidth) mWidth = w;
           }
+
+          final offsetX = measureSpacing.xPositions(scoreMeasure.voices.values);
 
           final elements = <LayoutElement>[];
           for (final voice in scoreMeasure.voices.values) {
@@ -182,8 +180,7 @@ final class LayoutEngine {
                 event: event,
                 measureX: currentX,
                 staffY: staffY,
-                measureWidth: mWidth,
-                measureDuration: measureDuration,
+                offsetX: offsetX,
                 elements: elements,
               );
             }
@@ -224,8 +221,7 @@ final class LayoutEngine {
     required MusicEvent event,
     required double measureX,
     required double staffY,
-    required double measureWidth,
-    required Fraction measureDuration,
+    required Map<Fraction, double> offsetX,
     required List<LayoutElement> elements,
   }) {
     switch (event) {
@@ -234,8 +230,7 @@ final class LayoutEngine {
           note: event,
           measureX: measureX,
           staffY: staffY,
-          measureWidth: measureWidth,
-          measureDuration: measureDuration,
+          offsetX: offsetX,
           elements: elements,
         );
       case RestEvent():
@@ -243,8 +238,7 @@ final class LayoutEngine {
           rest: event,
           measureX: measureX,
           staffY: staffY,
-          measureWidth: measureWidth,
-          measureDuration: measureDuration,
+          offsetX: offsetX,
           elements: elements,
         );
       case ChordEvent():
@@ -253,8 +247,7 @@ final class LayoutEngine {
             note: note.copyWith(offset: event.offset),
             measureX: measureX,
             staffY: staffY,
-            measureWidth: measureWidth,
-            measureDuration: measureDuration,
+            offsetX: offsetX,
             elements: elements,
           );
         }
@@ -265,13 +258,10 @@ final class LayoutEngine {
     required NoteEvent note,
     required double measureX,
     required double staffY,
-    required double measureWidth,
-    required Fraction measureDuration,
+    required Map<Fraction, double> offsetX,
     required List<LayoutElement> elements,
   }) {
-    final x =
-        measureX +
-        noteLayout.xForOffset(note.offset, measureDuration, measureWidth);
+    final x = measureX + (offsetX[note.offset] ?? 0.0);
     final sl = noteLayout.staffLineForPitch(note.pitch);
     final noteId = note.id.value;
 
@@ -318,13 +308,10 @@ final class LayoutEngine {
     required RestEvent rest,
     required double measureX,
     required double staffY,
-    required double measureWidth,
-    required Fraction measureDuration,
+    required Map<Fraction, double> offsetX,
     required List<LayoutElement> elements,
   }) {
-    final x =
-        measureX +
-        noteLayout.xForOffset(rest.offset, measureDuration, measureWidth);
+    final x = measureX + (offsetX[rest.offset] ?? 0.0);
     final sl = restPositioning.staffLineForRest(rest.noteValue.noteType);
     final restId = rest.id.value;
 
