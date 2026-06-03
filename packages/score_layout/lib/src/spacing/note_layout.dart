@@ -30,8 +30,11 @@ final class NoteLayout {
     };
     // E4 is our reference = staffLine 0
     // E4 has step=e, octave=4 → ordinal position = octave*7 + stepOrdinal[step]
-    const e4Position = 4 * 7 + 2; // 30
-    final pitchPosition = pitch.octave * 7 + stepOrdinal[pitch.step]!;
+    const stepsPerOctave = 7;
+    const referenceOctave = 4;
+    const referenceStepOrdinal = 2; // Step.e
+    const e4Position = referenceOctave * stepsPerOctave + referenceStepOrdinal;
+    final pitchPosition = pitch.octave * stepsPerOctave + stepOrdinal[pitch.step]!;
     return (pitchPosition - e4Position).toDouble();
   }
 
