@@ -8,7 +8,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-24.04-slim
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
@@ -20,7 +20,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-24.04-slim
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
@@ -32,7 +32,7 @@ jobs:
 
   deps_check:
     name: Dependency Boundary Check
-    runs-on: ubuntu-24.04-slim
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
