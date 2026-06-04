@@ -583,7 +583,12 @@ void main() {
       );
       final measure = Measure(
         id: MeasureId('m1'),
-        tuplets: IList([original]),
+        voices: IMap({
+          VoiceId('v1'): Voice(
+            id: VoiceId('v1'),
+            tuplets: IList([original]),
+          ),
+        }),
       );
       final staff = Staff(
         id: StaffId('s1'),
@@ -594,10 +599,10 @@ void main() {
         parts: IList([Part(id: PartId('p1'), name: 'Piano', staves: IList([staff]))]),
       );
       final decoded = converter.scoreFromMap(converter.scoreToMap(score));
-      final dm = decoded.parts[0].staves[0].measures[1]!;
-      expect(dm.tuplets[0].id, equals(original.id));
-      expect(dm.tuplets[0].noteIds, equals(original.noteIds));
-      expect(dm.tuplets[0].ratio, equals(original.ratio));
+      final dv = decoded.parts[0].staves[0].measures[1]!.voices[VoiceId('v1')]!;
+      expect(dv.tuplets[0].id, equals(original.id));
+      expect(dv.tuplets[0].noteIds, equals(original.noteIds));
+      expect(dv.tuplets[0].ratio, equals(original.ratio));
     });
 
     test('Score empty roundtrip', () {
@@ -633,9 +638,9 @@ void main() {
                     isFullMeasure: true,
                   ),
                 ]),
+                tuplets: IList([tuplet]),
               ),
             }),
-            tuplets: IList([tuplet]),
           ),
         }),
       );
@@ -693,8 +698,9 @@ void main() {
       expect(decoded.parts[0].slurs[0].id, equals(slur.id));
       expect(decoded.parts[0].ties.length, equals(1));
       expect(decoded.parts[0].ties[0].id, equals(tie.id));
-      expect(dm.tuplets.length, equals(1));
-      expect(dm.tuplets[0].id, equals(tuplet.id));
+      final dv = dm.voices[VoiceId('v1')]!;
+      expect(dv.tuplets.length, equals(1));
+      expect(dv.tuplets[0].id, equals(tuplet.id));
     });
   });
 }

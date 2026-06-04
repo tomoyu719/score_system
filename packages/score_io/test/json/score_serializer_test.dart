@@ -266,7 +266,12 @@ void main() {
                 measures: IMap({
                   1: Measure(
                     id: const MeasureId('m1'),
-                    tuplets: IList([tuplet]),
+                    voices: IMap({
+                      const VoiceId('v1'): Voice(
+                        id: const VoiceId('v1'),
+                        tuplets: IList([tuplet]),
+                      ),
+                    }),
                   ),
                 }),
               ),
@@ -275,9 +280,9 @@ void main() {
         ]),
       );
       final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
-      final rm = restored.parts[0].staves[0].measures[1]!;
-      expect(rm.tuplets.length, equals(1));
-      final rTuplet = rm.tuplets[0];
+      final rv = restored.parts[0].staves[0].measures[1]!.voices[const VoiceId('v1')]!;
+      expect(rv.tuplets.length, equals(1));
+      final rTuplet = rv.tuplets[0];
       expect(rTuplet.id, equals(const TupletId('tuplet-1')));
       expect(rTuplet.ratio, equals(Fraction(2, 3)));
       expect(rTuplet.noteIds.length, equals(3));

@@ -140,7 +140,6 @@ final class ScoreJsonConverter {
           for (final entry in measure.voices.entries)
             entry.key.value: _voiceToMap(entry.value),
         },
-        'tuplets': measure.tuplets.map(_tupletToMap).toList(),
       };
 
   Measure _measureFromMap(Map<String, Object?> map) {
@@ -152,10 +151,6 @@ final class ScoreJsonConverter {
     return Measure(
       id: MeasureId(map['id'] as String),
       voices: vs,
-      tuplets: IList(
-        (map['tuplets'] as List<dynamic>? ?? [])
-            .map((e) => _tupletFromMap(e as Map<String, Object?>)),
-      ),
     );
   }
 
@@ -168,6 +163,7 @@ final class ScoreJsonConverter {
         'isHidden': voice.isHidden,
         'isPlayback': voice.isPlayback,
         'events': voice.events.map(_musicEventToMap).toList(),
+        'tuplets': voice.tuplets.map(_tupletToMap).toList(),
       };
 
   Voice _voiceFromMap(Map<String, Object?> map) => Voice(
@@ -185,6 +181,10 @@ final class ScoreJsonConverter {
         events: IList(
           (map['events'] as List<dynamic>? ?? [])
               .map((e) => _musicEventFromMap(e as Map<String, Object?>)),
+        ),
+        tuplets: IList(
+          (map['tuplets'] as List<dynamic>? ?? [])
+              .map((e) => _tupletFromMap(e as Map<String, Object?>)),
         ),
       );
 
