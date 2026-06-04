@@ -14,6 +14,7 @@ import '../model/measure_header.dart';
 import '../model/music_event.dart'; // NoteEvent, RestEvent, ChordEvent, PercussionNote via parts
 import '../model/note_type.dart';
 import '../model/note_value.dart';
+import '../model/clef.dart';
 import '../model/part.dart';
 import '../model/percussion/drum_instrument.dart';
 import '../model/percussion/drum_mapping.dart';
@@ -105,6 +106,7 @@ final class ScoreJsonConverter {
     final m = <String, Object?>{
       'id': staff.id.value,
       'staffType': staff.staffType.name,
+      'clef': staff.clef.name,
       'measures': {
         for (final entry in staff.measures.entries)
           entry.key.toString(): _measureToMap(entry.value),
@@ -126,6 +128,7 @@ final class ScoreJsonConverter {
     return Staff(
       id: StaffId(map['id'] as String),
       staffType: StaffType.values.byName(map['staffType'] as String? ?? 'standard'),
+      clef: Clef.values.byName(map['clef'] as String? ?? 'treble'),
       tabConfig: map['tabConfig'] == null
           ? null
           : _tabConfigFromMap(map['tabConfig'] as Map<String, Object?>),

@@ -8,6 +8,7 @@ export 'src/ids.dart';
 export 'src/score_exception.dart';
 
 // Model — primitives
+export 'src/model/clef.dart';
 export 'src/model/fraction.dart';
 export 'src/model/note_type.dart';
 export 'src/model/note_value.dart';

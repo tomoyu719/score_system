@@ -1,0 +1,67 @@
+{
+  "systems": [
+    {
+      "staves": [
+        {
+          "partId": "p1",
+          "staffId": "s1",
+          "relativeY": 0
+        }
+      ],
+      "measures": [
+        {
+          "measureNumber": 1,
+          "relativeWidth": 1.0,
+          "voices": [
+            {
+              "voiceId": "v1",
+              "notes": [
+                {
+                  "noteId": "n1",
+                  "offset": "0/1",
+                  "staffLine": -2,
+                  "stemDirection": "down",
+                  "isSharedNotehead": false,
+                  "accidentals": [
+                    {
+                      "noteId": "n1",
+                      "type": "sharp"
+                    }
+                  ],
+                  "articulations": []
+                },
+                {
+                  "noteId": "n2",
+                  "offset": "0/1",
+                  "staffLine": 0,
+                  "stemDirection": "down",
+                  "isSharedNotehead": false,
+                  "accidentals": [
+                    {
+                      "noteId": "n2",
+                      "type": "flat"
+                    }
+                  ],
+                  "articulations": []
+                }
+              ],
+              "percussionNotes": [],
+              "rests": [],
+              "beams": [],
+              "stems": [
+                {
+                  "noteId": "n1",
+                  "direction": "down"
+                },
+                {
+                  "noteId": "n2",
+                  "direction": "down"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 import '../ids.dart';
+import 'clef.dart';
 import 'measure.dart';
 import 'percussion/percussion_config.dart';
 import 'tab/tab_config.dart';
@@ -16,6 +17,7 @@ final class Staff {
   const Staff({
     required this.id,
     this.staffType = StaffType.standard,
+    this.clef = Clef.treble,
     this.tabConfig,
     this.percussionConfig,
     this.measures = const IMapConst({}),
@@ -23,6 +25,9 @@ final class Staff {
 
   final StaffId id;
   final StaffType staffType;
+
+  /// Active clef; drives pitch-to-staff-line conversion in score_layout.
+  final Clef clef;
 
   /// TAB configuration; non-null when [staffType] is [StaffType.tab].
   final TabConfig? tabConfig;
@@ -48,6 +53,7 @@ final class Staff {
   Staff copyWith({
     StaffId? id,
     StaffType? staffType,
+    Clef? clef,
     TabConfig? tabConfig,
     PercussionConfig? percussionConfig,
     IMap<int, Measure>? measures,
@@ -55,6 +61,7 @@ final class Staff {
       Staff(
         id: id ?? this.id,
         staffType: staffType ?? this.staffType,
+        clef: clef ?? this.clef,
         tabConfig: tabConfig ?? this.tabConfig,
         percussionConfig: percussionConfig ?? this.percussionConfig,
         measures: measures ?? this.measures,
