@@ -24,6 +24,8 @@ extension type const TieId(String value) {}
 
 extension type const TupletId(String value) {}
 
+extension type const PercussionNoteId(String value) {}
+
 /// Generates UUID v4 values for all ID types. Use only at system boundaries.
 final class IdFactory {
   IdFactory._();
@@ -42,4 +44,5 @@ final class IdFactory {
   static SlurId slur() => SlurId(_uuid.v4());
   static TieId tie() => TieId(_uuid.v4());
   static TupletId tuplet() => TupletId(_uuid.v4());
+  static PercussionNoteId percussionNote() => PercussionNoteId(_uuid.v4());
 }

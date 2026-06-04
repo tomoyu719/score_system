@@ -135,6 +135,8 @@ final class MusicXmlExporter {
             case ChordEvent():
               _writeChordEvent(builder, event, voiceId, staffNumber);
               _writeAttachedDynamics(builder, event.dynamics);
+            case PercussionNote():
+              break; // percussion notes are not yet exported to MusicXML
           }
         }
       }
