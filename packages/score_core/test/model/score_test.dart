@@ -58,6 +58,32 @@ void main() {
       expect(score.headerForMeasure(99), isNull);
     });
 
+    group('effectiveHeaderForMeasure', () {
+      const ts = TimeSignature(beats: 4, beatType: 4);
+      const ks = KeySignature(fifths: 0);
+
+      test('exact match returns that header', () {
+        final h1 = MeasureHeader(measureNumber: 1, timeSignature: ts, keySignature: ks);
+        final h3 = MeasureHeader(measureNumber: 3, timeSignature: ts, keySignature: ks);
+        final score = _emptyScore().copyWith(measureHeaders: IList([h1, h3]));
+        expect(score.effectiveHeaderForMeasure(3), equals(h3));
+      });
+
+      test('no header at measure N returns nearest preceding header', () {
+        final h1 = MeasureHeader(measureNumber: 1, timeSignature: ts, keySignature: ks);
+        final h3 = MeasureHeader(measureNumber: 3, timeSignature: ts, keySignature: ks);
+        final score = _emptyScore().copyWith(measureHeaders: IList([h1, h3]));
+        expect(score.effectiveHeaderForMeasure(5), equals(h3));
+      });
+
+      test('measure number before any header returns null', () {
+        final h2 = MeasureHeader(measureNumber: 2, timeSignature: ts, keySignature: ks);
+        final h4 = MeasureHeader(measureNumber: 4, timeSignature: ts, keySignature: ks);
+        final score = _emptyScore().copyWith(measureHeaders: IList([h2, h4]));
+        expect(score.effectiveHeaderForMeasure(1), isNull);
+      });
+    });
+
     test('allVoices yields empty iterable for score with no parts', () {
       expect(_emptyScore().allVoices, isEmpty);
     });

@@ -52,6 +52,20 @@ final class Score {
     return null;
   }
 
+  /// Returns the [MeasureHeader] whose [MeasureHeader.measureNumber] is the
+  /// largest value ≤ [measureNumber], or null if no such header exists.
+  MeasureHeader? effectiveHeaderForMeasure(int measureNumber) {
+    MeasureHeader? result;
+    for (final h in measureHeaders) {
+      if (h.measureNumber <= measureNumber) {
+        if (result == null || h.measureNumber > result.measureNumber) {
+          result = h;
+        }
+      }
+    }
+    return result;
+  }
+
   /// Lazily yields every [VoiceContext] in the score, in part → staff →
   /// measure → voice order. Callers need no knowledge of the hierarchy shape.
   Iterable<VoiceContext> get allVoices sync* {

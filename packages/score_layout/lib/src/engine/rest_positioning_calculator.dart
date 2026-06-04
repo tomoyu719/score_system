@@ -17,6 +17,8 @@ final class RestPositioningCalculator {
 
   int _auto(Voice voice, int voiceCountInMeasure) {
     if (voiceCountInMeasure == 1) return 4;
-    return voice.priority == 0 ? 6 : 2;
+    const upperVoiceLine = 6;
+    const lowerVoiceLine = 2;
+    return voice.priority == 0 ? upperVoiceLine : lowerVoiceLine;
   }
 }
