@@ -68,5 +68,34 @@ void main() {
         expect(p.octave, equals(4));
       });
     });
+
+    group('diatonicPosition', () {
+      test('C0 = 0', () {
+        expect(Pitch(step: Step.c, octave: 0).diatonicPosition, equals(0));
+      });
+
+      test('C4 = 28', () {
+        expect(Pitch(step: Step.c, octave: 4).diatonicPosition, equals(28));
+      });
+
+      test('E4 = 30', () {
+        expect(Pitch(step: Step.e, octave: 4).diatonicPosition, equals(30));
+      });
+
+      test('B4 = 34', () {
+        expect(Pitch(step: Step.b, octave: 4).diatonicPosition, equals(34));
+      });
+
+      test('C5 = 35', () {
+        expect(Pitch(step: Step.c, octave: 5).diatonicPosition, equals(35));
+      });
+
+      test('alter does not affect diatonicPosition', () {
+        expect(
+          Pitch(step: Step.f, octave: 4, alter: 1.0).diatonicPosition,
+          equals(Pitch(step: Step.f, octave: 4).diatonicPosition),
+        );
+      });
+    });
   });
 }

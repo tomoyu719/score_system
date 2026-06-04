@@ -27,6 +27,19 @@ final class Pitch {
     Step.b: 11,
   };
 
+  static const _stepOrdinal = {
+    Step.c: 0,
+    Step.d: 1,
+    Step.e: 2,
+    Step.f: 3,
+    Step.g: 4,
+    Step.a: 5,
+    Step.b: 6,
+  };
+
+  /// Clef-independent diatonic height. C0 = 0, each octave adds 7.
+  int get diatonicPosition => octave * 7 + _stepOrdinal[step]!;
+
   /// MIDI pitch number where C4 = 60.
   int get midiPitch =>
       (octave + 1) * 12 + _stepBase[step]! + alter.round();

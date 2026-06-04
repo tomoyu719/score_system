@@ -12,6 +12,7 @@ export 'src/model/fraction.dart';
 export 'src/model/note_type.dart';
 export 'src/model/note_value.dart';
 export 'src/model/pitch.dart';
+export 'src/model/clef.dart';
 export 'src/model/placement.dart';
 
 // Model — notation annotations

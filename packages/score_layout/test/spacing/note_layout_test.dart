@@ -125,6 +125,99 @@ void main() {
     });
   });
 
+  group('NoteLayout.staffLineForPitch (bass clef)', () {
+    // Bass clef bottom line = G2
+    test('G2 → staffLine 0 (bottom line)', () {
+      expect(
+        layout.staffLineForPitch(
+          const Pitch(step: Step.g, octave: 2),
+          Clef.bass,
+        ),
+        0.0,
+      );
+    });
+
+    test('A2 → staffLine 1', () {
+      expect(
+        layout.staffLineForPitch(
+          const Pitch(step: Step.a, octave: 2),
+          Clef.bass,
+        ),
+        1.0,
+      );
+    });
+
+    test('B3 → staffLine 9 (top area)', () {
+      // B3 diatonic = 3*7+6 = 27; G2 ref = 2*7+4 = 18; 27-18 = 9
+      expect(
+        layout.staffLineForPitch(
+          const Pitch(step: Step.b, octave: 3),
+          Clef.bass,
+        ),
+        9.0,
+      );
+    });
+
+    test('F2 → staffLine -1 (below bottom)', () {
+      // F2 diatonic = 2*7+3 = 17; G2 ref = 18; 17-18 = -1
+      expect(
+        layout.staffLineForPitch(
+          const Pitch(step: Step.f, octave: 2),
+          Clef.bass,
+        ),
+        -1.0,
+      );
+    });
+  });
+
+  group('NoteLayout.staffLineForPitch (alto clef)', () {
+    // Alto clef bottom line = F3
+    test('F3 → staffLine 0 (bottom line)', () {
+      expect(
+        layout.staffLineForPitch(
+          const Pitch(step: Step.f, octave: 3),
+          Clef.alto,
+        ),
+        0.0,
+      );
+    });
+
+    test('C4 → staffLine 4 (middle line)', () {
+      // C4 diatonic = 28; F3 ref = 3*7+3 = 24; 28-24 = 4
+      expect(
+        layout.staffLineForPitch(
+          const Pitch(step: Step.c, octave: 4),
+          Clef.alto,
+        ),
+        4.0,
+      );
+    });
+  });
+
+  group('NoteLayout.staffLineForPitch (tenor clef)', () {
+    // Tenor clef bottom line = D3
+    test('D3 → staffLine 0 (bottom line)', () {
+      expect(
+        layout.staffLineForPitch(
+          const Pitch(step: Step.d, octave: 3),
+          Clef.tenor,
+        ),
+        0.0,
+      );
+    });
+
+    test('C4 → staffLine 6', () {
+      // C4 diatonic = 28; D3 ref = 3*7+1 = 22; 28-22 = 6
+      expect(
+        layout.staffLineForPitch(
+          const Pitch(step: Step.c, octave: 4),
+          Clef.tenor,
+        ),
+        6.0,
+      );
+    });
+  });
+
   group('NoteLayout.xForOffset', () {
     test('offset 0 → x 0.0', () {
       expect(
