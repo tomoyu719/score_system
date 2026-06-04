@@ -11,15 +11,24 @@ import '../model/key_signature.dart';
 import '../model/lyric.dart';
 import '../model/measure.dart';
 import '../model/measure_header.dart';
-import '../model/music_event.dart'; // NoteEvent, RestEvent, ChordEvent via parts
+import '../model/music_event.dart'; // NoteEvent, RestEvent, ChordEvent, PercussionNote via parts
 import '../model/note_type.dart';
 import '../model/note_value.dart';
 import '../model/part.dart';
+import '../model/percussion/drum_instrument.dart';
+import '../model/percussion/drum_mapping.dart';
+import '../model/percussion/note_head_type.dart';
+import '../model/percussion/percussion_config.dart';
 import '../model/pitch.dart';
 import '../model/placement.dart';
+import '../model/rest_positioning_policy.dart';
 import '../model/score.dart';
 import '../model/slur.dart';
 import '../model/staff.dart';
+import '../model/stem_direction.dart';
+import '../model/tab/guitar_technique.dart';
+import '../model/tab/tab_config.dart';
+import '../model/tab/tab_fret.dart';
 import '../model/tempo.dart';
 import '../model/tie.dart';
 import '../model/time_signature.dart';
@@ -92,14 +101,21 @@ final class ScoreJsonConverter {
         ),
       );
 
-  Map<String, Object?> _staffToMap(Staff staff) => {
-        'id': staff.id.value,
-        'staffType': staff.staffType.name,
-        'measures': {
-          for (final entry in staff.measures.entries)
-            entry.key.toString(): _measureToMap(entry.value),
-        },
-      };
+  Map<String, Object?> _staffToMap(Staff staff) {
+    final m = <String, Object?>{
+      'id': staff.id.value,
+      'staffType': staff.staffType.name,
+      'measures': {
+        for (final entry in staff.measures.entries)
+          entry.key.toString(): _measureToMap(entry.value),
+      },
+    };
+    if (staff.tabConfig != null) m['tabConfig'] = _tabConfigToMap(staff.tabConfig!);
+    if (staff.percussionConfig != null) {
+      m['percussionConfig'] = _percussionConfigToMap(staff.percussionConfig!);
+    }
+    return m;
+  }
 
   Staff _staffFromMap(Map<String, Object?> map) {
     final measuresRaw = map['measures'] as Map<String, Object?>? ?? {};
@@ -110,6 +126,12 @@ final class ScoreJsonConverter {
     return Staff(
       id: StaffId(map['id'] as String),
       staffType: StaffType.values.byName(map['staffType'] as String? ?? 'standard'),
+      tabConfig: map['tabConfig'] == null
+          ? null
+          : _tabConfigFromMap(map['tabConfig'] as Map<String, Object?>),
+      percussionConfig: map['percussionConfig'] == null
+          ? null
+          : _percussionConfigFromMap(map['percussionConfig'] as Map<String, Object?>),
       measures: ms,
     );
   }
@@ -136,11 +158,27 @@ final class ScoreJsonConverter {
 
   Map<String, Object?> _voiceToMap(Voice voice) => {
         'id': voice.id.value,
+        'voiceNumber': voice.voiceNumber,
+        'priority': voice.priority,
+        'stemDirectionPolicy': voice.stemDirectionPolicy.name,
+        'restPositioningPolicy': voice.restPositioningPolicy.name,
+        'isHidden': voice.isHidden,
+        'isPlayback': voice.isPlayback,
         'events': voice.events.map(_musicEventToMap).toList(),
       };
 
   Voice _voiceFromMap(Map<String, Object?> map) => Voice(
         id: VoiceId(map['id'] as String),
+        voiceNumber: map['voiceNumber'] as int? ?? 1,
+        priority: map['priority'] as int? ?? 0,
+        stemDirectionPolicy: StemDirection.values.byName(
+          map['stemDirectionPolicy'] as String? ?? 'auto',
+        ),
+        restPositioningPolicy: RestPositioningPolicy.values.byName(
+          map['restPositioningPolicy'] as String? ?? 'auto',
+        ),
+        isHidden: map['isHidden'] as bool? ?? false,
+        isPlayback: map['isPlayback'] as bool? ?? false,
         events: IList(
           (map['events'] as List<dynamic>? ?? [])
               .map((e) => _musicEventFromMap(e as Map<String, Object?>)),
@@ -151,6 +189,7 @@ final class ScoreJsonConverter {
         NoteEvent() => _noteEventToMap(event),
         RestEvent() => _restEventToMap(event),
         ChordEvent() => _chordEventToMap(event),
+        PercussionNote() => _percussionNoteToMap(event),
       };
 
   MusicEvent _musicEventFromMap(Map<String, Object?> map) =>
@@ -158,6 +197,7 @@ final class ScoreJsonConverter {
         'note' => _noteEventFromMap(map),
         'rest' => _restEventFromMap(map),
         'chord' => _chordEventFromMap(map),
+        'percussion' => _percussionNoteFromMap(map),
         final t => throw ScoreException('Unknown event type: $t'),
       };
 
@@ -174,6 +214,7 @@ final class ScoreJsonConverter {
       'lyrics': note.lyrics.map(_lyricToMap).toList(),
     };
     if (note.fingering != null) m['fingering'] = _fingeringToMap(note.fingering!);
+    if (note.tabFret != null) m['tabFret'] = _tabFretToMap(note.tabFret!);
     return m;
   }
 
@@ -198,6 +239,9 @@ final class ScoreJsonConverter {
         fingering: map['fingering'] == null
             ? null
             : _fingeringFromMap(map['fingering'] as Map<String, Object?>),
+        tabFret: map['tabFret'] == null
+            ? null
+            : _tabFretFromMap(map['tabFret'] as Map<String, Object?>),
       );
 
   Map<String, Object?> _restEventToMap(RestEvent rest) => {
@@ -318,6 +362,103 @@ final class ScoreJsonConverter {
   Fingering _fingeringFromMap(Map<String, Object?> map) => Fingering(
         value: map['value'] as int,
         isSubstitution: map['isSubstitution'] as bool? ?? false,
+      );
+
+  Map<String, Object?> _tabConfigToMap(TabConfig tc) => {
+        'stringCount': tc.stringCount,
+        'tuning': tc.tuning.map(_pitchToMap).toList(),
+        'capo': tc.capo,
+      };
+
+  TabConfig _tabConfigFromMap(Map<String, Object?> map) => TabConfig(
+        stringCount: map['stringCount'] as int,
+        tuning: IList(
+          (map['tuning'] as List<dynamic>)
+              .map((e) => _pitchFromMap(e as Map<String, Object?>)),
+        ),
+        capo: map['capo'] as int? ?? 0,
+      );
+
+  Map<String, Object?> _tabFretToMap(TabFret tf) => {
+        'stringNumber': tf.stringNumber,
+        'fretNumber': tf.fretNumber,
+        'techniques': tf.techniques.map((t) => t.name).toList(),
+        'isManualOverride': tf.isManualOverride,
+      };
+
+  TabFret _tabFretFromMap(Map<String, Object?> map) => TabFret(
+        stringNumber: map['stringNumber'] as int,
+        fretNumber: map['fretNumber'] as int,
+        techniques: IList(
+          (map['techniques'] as List<dynamic>? ?? [])
+              .map((e) => GuitarTechnique.values.byName(e as String)),
+        ),
+        isManualOverride: map['isManualOverride'] as bool? ?? false,
+      );
+
+  Map<String, Object?> _percussionConfigToMap(PercussionConfig pc) =>
+      {'drumMapping': _drumMappingToMap(pc.drumMapping)};
+
+  PercussionConfig _percussionConfigFromMap(Map<String, Object?> map) =>
+      PercussionConfig(
+        drumMapping: _drumMappingFromMap(map['drumMapping'] as Map<String, Object?>),
+      );
+
+  Map<String, Object?> _drumMappingToMap(DrumMapping dm) => {
+        'instruments': {
+          for (final entry in dm.midiNoteToInstrument.entries)
+            entry.key.toString(): _drumInstrumentToMap(entry.value),
+        },
+      };
+
+  DrumMapping _drumMappingFromMap(Map<String, Object?> map) {
+    final raw = map['instruments'] as Map<String, Object?>? ?? {};
+    var instruments = IMap<int, DrumInstrument>({});
+    for (final entry in raw.entries) {
+      instruments = instruments.add(
+        int.parse(entry.key),
+        _drumInstrumentFromMap(entry.value as Map<String, Object?>),
+      );
+    }
+    return DrumMapping(midiNoteToInstrument: instruments);
+  }
+
+  Map<String, Object?> _drumInstrumentToMap(DrumInstrument di) => {
+        'name': di.name,
+        'staffLine': di.staffLine,
+        'noteHeadType': di.noteHeadType.name,
+        'midiNote': di.midiNote,
+      };
+
+  DrumInstrument _drumInstrumentFromMap(Map<String, Object?> map) =>
+      DrumInstrument(
+        name: map['name'] as String,
+        staffLine: map['staffLine'] as int,
+        noteHeadType: NoteHeadType.values.byName(map['noteHeadType'] as String),
+        midiNote: map['midiNote'] as int,
+      );
+
+  Map<String, Object?> _percussionNoteToMap(PercussionNote pn) => {
+        'type': 'percussion',
+        'id': pn.id.value,
+        'offset': pn.offset.toString(),
+        'noteValue': _noteValueToMap(pn.noteValue),
+        'instrument': _drumInstrumentToMap(pn.instrument),
+        'isGrace': pn.isGrace,
+        'articulations': pn.articulations.map(_articulationToMap).toList(),
+      };
+
+  PercussionNote _percussionNoteFromMap(Map<String, Object?> map) =>
+      PercussionNote(
+        id: PercussionNoteId(map['id'] as String),
+        offset: Fraction.fromString(map['offset'] as String),
+        noteValue: _noteValueFromMap(map['noteValue'] as Map<String, Object?>),
+        instrument: _drumInstrumentFromMap(map['instrument'] as Map<String, Object?>),
+        isGrace: map['isGrace'] as bool? ?? false,
+        articulations: IList(
+          (map['articulations'] as List<dynamic>? ?? [])
+              .map((e) => _articulationFromMap(e as Map<String, Object?>)),
+        ),
       );
 
   Map<String, Object?> _measureHeaderToMap(MeasureHeader h) {

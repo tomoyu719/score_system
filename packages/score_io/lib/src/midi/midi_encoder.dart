@@ -118,6 +118,19 @@ final class MidiEncoder {
                 }
               case RestEvent():
                 break;
+              case PercussionNote():
+                rawEvents.add(_MidiRawEvent(
+                  tick: onTick,
+                  isNoteOn: true,
+                  channel: channel,
+                  pitch: event.instrument.midiNote,
+                ));
+                rawEvents.add(_MidiRawEvent(
+                  tick: offTick,
+                  isNoteOn: false,
+                  channel: channel,
+                  pitch: event.instrument.midiNote,
+                ));
             }
           }
           voiceIndex++;

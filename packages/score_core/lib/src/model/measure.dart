@@ -22,6 +22,16 @@ final class Measure {
     return copyWith(voices: voices.add(id, updater(existing)));
   }
 
+  /// Returns voices sorted by [Voice.priority] ascending, then [Voice.voiceNumber] ascending.
+  Iterable<Voice> get voicesSortedByPriority {
+    final sorted = voices.values.toList()
+      ..sort((a, b) {
+        final p = a.priority.compareTo(b.priority);
+        return p != 0 ? p : a.voiceNumber.compareTo(b.voiceNumber);
+      });
+    return sorted;
+  }
+
   Measure copyWith({MeasureId? id, IMap<VoiceId, Voice>? voices}) => Measure(
         id: id ?? this.id,
         voices: voices ?? this.voices,

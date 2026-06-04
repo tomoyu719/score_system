@@ -13,6 +13,8 @@ export 'src/model/note_type.dart';
 export 'src/model/note_value.dart';
 export 'src/model/pitch.dart';
 export 'src/model/placement.dart';
+export 'src/model/stem_direction.dart';
+export 'src/model/rest_positioning_policy.dart';
 
 // Model — notation annotations
 export 'src/model/articulation.dart';
@@ -20,8 +22,19 @@ export 'src/model/dynamic.dart';
 export 'src/model/lyric.dart';
 export 'src/model/fingering.dart';
 
+// Model — TAB notation
+export 'src/model/tab/guitar_technique.dart';
+export 'src/model/tab/tab_config.dart';
+export 'src/model/tab/tab_fret.dart';
+
+// Model — percussion notation
+export 'src/model/percussion/note_head_type.dart';
+export 'src/model/percussion/drum_instrument.dart';
+export 'src/model/percussion/drum_mapping.dart';
+export 'src/model/percussion/percussion_config.dart';
+
 // Model — events
-export 'src/model/music_event.dart'; // re-exports NoteEvent, RestEvent, ChordEvent via parts
+export 'src/model/music_event.dart'; // re-exports NoteEvent, RestEvent, ChordEvent, PercussionNote via parts
 
 // Model — hierarchy
 export 'src/model/voice.dart';

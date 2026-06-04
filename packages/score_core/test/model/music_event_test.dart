@@ -142,6 +142,7 @@ void main() {
         NoteEvent() => 'note',
         RestEvent() => 'rest',
         ChordEvent() => 'chord',
+        PercussionNote() => 'percussion',
       };
       expect(name, equals('note'));
     });

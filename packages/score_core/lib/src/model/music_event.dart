@@ -7,11 +7,14 @@ import 'fingering.dart';
 import 'fraction.dart';
 import 'lyric.dart';
 import 'note_value.dart';
+import 'percussion/drum_instrument.dart';
 import 'pitch.dart';
+import 'tab/tab_fret.dart';
 
 part 'note_event.dart';
 part 'rest_event.dart';
 part 'chord_event.dart';
+part 'percussion_note.dart';
 
 /// Base for all music events within a voice.
 sealed class MusicEvent {

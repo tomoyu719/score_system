@@ -92,6 +92,19 @@ final class MidiJsonDump {
                 }
               case RestEvent():
                 break;
+              case PercussionNote():
+                rawEvents.add(_JsonEvent(
+                  tick: onTick,
+                  isNoteOn: true,
+                  channel: channel,
+                  pitch: event.instrument.midiNote,
+                ));
+                rawEvents.add(_JsonEvent(
+                  tick: offTick,
+                  isNoteOn: false,
+                  channel: channel,
+                  pitch: event.instrument.midiNote,
+                ));
             }
           }
           voiceIndex++;

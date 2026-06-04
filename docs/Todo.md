@@ -59,20 +59,20 @@
 - [x] T26: ValidationResult JSON serialize `[P0]`
 
 ### E2-S5: TAB model
-- [ ] T27: TabConfig / TabFret `[P1]`
-- [ ] T28: GuitarTechnique `[P1]`
+- [x] T27: TabConfig / TabFret `[P1]`
+- [x] T28: GuitarTechnique `[P1]`
 
 ### E2-S6: Percussion model
-- [ ] T29: DrumMapping / DrumInstrument `[P1]`
-- [ ] T30: PercussionNote `[P1]`
+- [x] T29: DrumMapping / DrumInstrument `[P1]`
+- [x] T30: PercussionNote `[P1]`
 
 ### E2-S7: Cross-staff model
 - [ ] T31: CrossStaffRef `[P2]`
 - [ ] T32: CrossStaffBeamGroup `[P2]`
 
 ### E2-S8: N Voice
-- [ ] T33: VoiceConfig `[P1]`
-- [ ] T34: VoicePriority policy `[P1]`
+- [x] T33: VoiceConfig `[P1]`
+- [x] T34: VoicePriority policy `[P1]`
 
 ---
 
@@ -119,13 +119,7 @@
 - [ ] T53: RestPositioning `[P1]`
 - [ ] T54: SharedNotehead検出 `[P1]`
 
-### E4-S4: collision
-- [ ] T55: CollisionDetector `[P1]`
-- [ ] T56: CollisionReport `[P1]`
-- [ ] T57: CollisionResolver `[P1]`
-- [ ] T58: ManualOverride対応 `[P1]`
-
-### E4-S5: golden test
+### E4-S4: golden test
 - [ ] T59: golden test基盤 `[P1]`
 - [ ] T60: 主要golden JSON作成 `[P1]`
 - [ ] T61: incremental layout基盤 `[P1]`
@@ -139,7 +133,7 @@
 - [ ] T63: `score validate` `[P0]`
 - [ ] T64: `score import musicxml` / `score export musicxml` `[P0]`
 - [ ] T65: `score export midi` `[P0]`
-- [ ] T66: `score layout` / `score collisions` / `score fix-collisions` `[P1]`
+- [ ] T66: `score layout` `[P1]`
 - [ ] T67: `score inspect` / `score inspect --midi` `[P0]`
 - [ ] T68: `score diff` `[P1]`
 - [ ] T69: `score tui` / `score mcp serve` `[P1]`
@@ -157,8 +151,7 @@
 - [ ] T73: Score Tree パネル `[P1]`
 - [ ] T74: Measure Grid パネル `[P1]`
 - [ ] T75: Event List パネル `[P1]`
-- [ ] T76: Collision Report パネル `[P1]`
-- [ ] T77: Validation パネル `[P1]`
+- [ ] T76: Validation パネル `[P1]`
 - [ ] T78: Command Palette `[P1]`
 
 ### E6-S3: editor
@@ -181,12 +174,12 @@
 
 ### E7-S2: Resources
 - [ ] T87: score / parts / measures resource `[P1]`
-- [ ] T88: layout / collision / validation resource `[P1]`
+- [ ] T88: layout / validation resource `[P1]`
 
 ### E7-S3: Tools
 - [ ] T89: query tools `[P1]`
 - [ ] T90: edit tools `[P1]`
-- [ ] T91: layout / collision tools `[P1]`
+- [ ] T91: layout tools `[P1]`
 - [ ] T92: import / export tools `[P1]`
 
 ### E7-S4: 安全性

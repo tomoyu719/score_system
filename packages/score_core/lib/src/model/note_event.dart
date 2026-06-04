@@ -11,6 +11,7 @@ final class NoteEvent extends MusicEvent {
     this.dynamics = const IListConst([]),
     this.lyrics = const IListConst([]),
     this.fingering,
+    this.tabFret,
     this.isGrace = false,
   });
 
@@ -20,6 +21,10 @@ final class NoteEvent extends MusicEvent {
   final IList<Dynamic> dynamics;
   final IList<Lyric> lyrics;
   final Fingering? fingering;
+
+  /// TAB staff fret/string assignment; null when not using TAB notation.
+  final TabFret? tabFret;
+
   final bool isGrace;
 
   NoteEvent copyWith({
@@ -31,6 +36,7 @@ final class NoteEvent extends MusicEvent {
     IList<Dynamic>? dynamics,
     IList<Lyric>? lyrics,
     Fingering? fingering,
+    TabFret? tabFret,
     bool? isGrace,
   }) =>
       NoteEvent(
@@ -42,6 +48,7 @@ final class NoteEvent extends MusicEvent {
         dynamics: dynamics ?? this.dynamics,
         lyrics: lyrics ?? this.lyrics,
         fingering: fingering ?? this.fingering,
+        tabFret: tabFret ?? this.tabFret,
         isGrace: isGrace ?? this.isGrace,
       );
 }

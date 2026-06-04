@@ -2,10 +2,12 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 import '../ids.dart';
 import 'measure.dart';
+import 'percussion/percussion_config.dart';
+import 'tab/tab_config.dart';
 import 'voice.dart';
 
 /// Staff type determines how the staff is rendered and edited.
-enum StaffType { standard, tab, percussion }
+enum StaffType { standard, tab, percussion, percussionTab }
 
 /// A single staff (line group) within a Part.
 ///
@@ -14,11 +16,19 @@ final class Staff {
   const Staff({
     required this.id,
     this.staffType = StaffType.standard,
+    this.tabConfig,
+    this.percussionConfig,
     this.measures = const IMapConst({}),
   });
 
   final StaffId id;
   final StaffType staffType;
+
+  /// TAB configuration; non-null when [staffType] is [StaffType.tab].
+  final TabConfig? tabConfig;
+
+  /// Percussion configuration; non-null when [staffType] is [StaffType.percussion] or [StaffType.percussionTab].
+  final PercussionConfig? percussionConfig;
 
   /// Measures keyed by 1-based measure number.
   final IMap<int, Measure> measures;
@@ -38,11 +48,15 @@ final class Staff {
   Staff copyWith({
     StaffId? id,
     StaffType? staffType,
+    TabConfig? tabConfig,
+    PercussionConfig? percussionConfig,
     IMap<int, Measure>? measures,
   }) =>
       Staff(
         id: id ?? this.id,
         staffType: staffType ?? this.staffType,
+        tabConfig: tabConfig ?? this.tabConfig,
+        percussionConfig: percussionConfig ?? this.percussionConfig,
         measures: measures ?? this.measures,
       );
 }
