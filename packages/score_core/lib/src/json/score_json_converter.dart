@@ -73,7 +73,6 @@ final class ScoreJsonConverter {
         'beamGroups': part.beamGroups.map(_beamGroupToMap).toList(),
         'slurs': part.slurs.map(_slurToMap).toList(),
         'ties': part.ties.map(_tieToMap).toList(),
-        'tuplets': part.tuplets.map(_tupletToMap).toList(),
       };
 
   Part _partFromMap(Map<String, Object?> map) => Part(
@@ -95,10 +94,6 @@ final class ScoreJsonConverter {
         ties: IList(
           (map['ties'] as List<dynamic>? ?? [])
               .map((e) => _tieFromMap(e as Map<String, Object?>)),
-        ),
-        tuplets: IList(
-          (map['tuplets'] as List<dynamic>? ?? [])
-              .map((e) => _tupletFromMap(e as Map<String, Object?>)),
         ),
       );
 
@@ -145,6 +140,7 @@ final class ScoreJsonConverter {
           for (final entry in measure.voices.entries)
             entry.key.value: _voiceToMap(entry.value),
         },
+        'tuplets': measure.tuplets.map(_tupletToMap).toList(),
       };
 
   Measure _measureFromMap(Map<String, Object?> map) {
@@ -156,6 +152,10 @@ final class ScoreJsonConverter {
     return Measure(
       id: MeasureId(map['id'] as String),
       voices: vs,
+      tuplets: IList(
+        (map['tuplets'] as List<dynamic>? ?? [])
+            .map((e) => _tupletFromMap(e as Map<String, Object?>)),
+      ),
     );
   }
 

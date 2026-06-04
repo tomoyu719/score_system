@@ -5,7 +5,6 @@ import 'beam_group.dart';
 import 'slur.dart';
 import 'staff.dart';
 import 'tie.dart';
-import 'tuplet.dart';
 
 /// An instrument part containing one or more staves.
 final class Part {
@@ -17,7 +16,6 @@ final class Part {
     this.beamGroups = const IListConst([]),
     this.slurs = const IListConst([]),
     this.ties = const IListConst([]),
-    this.tuplets = const IListConst([]),
   });
 
   final PartId id;
@@ -33,9 +31,6 @@ final class Part {
 
   /// Ties referencing notes by ID within this part.
   final IList<Tie> ties;
-
-  /// Tuplet groups referencing notes by ID within this part.
-  final IList<Tuplet> tuplets;
 
   /// Returns the [Staff] with the given [id], or null if not found.
   Staff? findStaff(StaffId id) {
@@ -61,7 +56,6 @@ final class Part {
     IList<BeamGroup>? beamGroups,
     IList<Slur>? slurs,
     IList<Tie>? ties,
-    IList<Tuplet>? tuplets,
   }) =>
       Part(
         id: id ?? this.id,
@@ -71,6 +65,5 @@ final class Part {
         beamGroups: beamGroups ?? this.beamGroups,
         slurs: slurs ?? this.slurs,
         ties: ties ?? this.ties,
-        tuplets: tuplets ?? this.tuplets,
       );
 }

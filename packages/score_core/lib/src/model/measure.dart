@@ -1,6 +1,7 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 import '../ids.dart';
+import 'tuplet.dart';
 import 'voice.dart';
 
 /// A single measure containing one or more voices.
@@ -8,12 +9,16 @@ final class Measure {
   const Measure({
     required this.id,
     this.voices = const IMapConst({}),
+    this.tuplets = const IListConst([]),
   });
 
   final MeasureId id;
 
   /// Voices keyed by VoiceId.
   final IMap<VoiceId, Voice> voices;
+
+  /// Tuplet groups referencing notes within this measure.
+  final IList<Tuplet> tuplets;
 
   /// Returns a new [Measure] with the voice identified by [id] transformed by
   /// [updater]. Creates an empty [Voice] if that ID does not yet exist.
@@ -32,8 +37,14 @@ final class Measure {
     return sorted;
   }
 
-  Measure copyWith({MeasureId? id, IMap<VoiceId, Voice>? voices}) => Measure(
+  Measure copyWith({
+    MeasureId? id,
+    IMap<VoiceId, Voice>? voices,
+    IList<Tuplet>? tuplets,
+  }) =>
+      Measure(
         id: id ?? this.id,
         voices: voices ?? this.voices,
+        tuplets: tuplets ?? this.tuplets,
       );
 }

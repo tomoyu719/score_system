@@ -257,12 +257,27 @@ void main() {
       final score = Score(
         id: const ScoreId('score-11'),
         parts: IList([
-          Part(id: const PartId('p1'), name: 'Piano', tuplets: IList([tuplet])),
+          Part(
+            id: const PartId('p1'),
+            name: 'Piano',
+            staves: IList([
+              Staff(
+                id: const StaffId('s1'),
+                measures: IMap({
+                  1: Measure(
+                    id: const MeasureId('m1'),
+                    tuplets: IList([tuplet]),
+                  ),
+                }),
+              ),
+            ]),
+          ),
         ]),
       );
       final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
-      expect(restored.parts[0].tuplets.length, equals(1));
-      final rTuplet = restored.parts[0].tuplets[0];
+      final rm = restored.parts[0].staves[0].measures[1]!;
+      expect(rm.tuplets.length, equals(1));
+      final rTuplet = rm.tuplets[0];
       expect(rTuplet.id, equals(const TupletId('tuplet-1')));
       expect(rTuplet.ratio, equals(Fraction(2, 3)));
       expect(rTuplet.noteIds.length, equals(3));

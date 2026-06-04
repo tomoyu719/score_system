@@ -581,16 +581,23 @@ void main() {
         noteIds: IList([NoteId('n1'), NoteId('n2'), NoteId('n3')]),
         ratio: Fraction(2, 3),
       );
-      final part = Part(
-        id: PartId('p1'),
-        name: 'Piano',
+      final measure = Measure(
+        id: MeasureId('m1'),
         tuplets: IList([original]),
       );
-      final score = Score(id: ScoreId('s'), parts: IList([part]));
+      final staff = Staff(
+        id: StaffId('s1'),
+        measures: IMap({1: measure}),
+      );
+      final score = Score(
+        id: ScoreId('s'),
+        parts: IList([Part(id: PartId('p1'), name: 'Piano', staves: IList([staff]))]),
+      );
       final decoded = converter.scoreFromMap(converter.scoreToMap(score));
-      expect(decoded.parts[0].tuplets[0].id, equals(original.id));
-      expect(decoded.parts[0].tuplets[0].noteIds, equals(original.noteIds));
-      expect(decoded.parts[0].tuplets[0].ratio, equals(original.ratio));
+      final dm = decoded.parts[0].staves[0].measures[1]!;
+      expect(dm.tuplets[0].id, equals(original.id));
+      expect(dm.tuplets[0].noteIds, equals(original.noteIds));
+      expect(dm.tuplets[0].ratio, equals(original.ratio));
     });
 
     test('Score empty roundtrip', () {
@@ -604,6 +611,11 @@ void main() {
     });
 
     test('Score with parts and headers roundtrip', () {
+      final tuplet = Tuplet(
+        id: TupletId('tup1'),
+        noteIds: IList([NoteId('n5'), NoteId('n6'), NoteId('n7')]),
+        ratio: Fraction(2, 3),
+      );
       final staff = Staff(
         id: StaffId('s1'),
         staffType: StaffType.standard,
@@ -623,6 +635,7 @@ void main() {
                 ]),
               ),
             }),
+            tuplets: IList([tuplet]),
           ),
         }),
       );
@@ -640,11 +653,6 @@ void main() {
         startNoteId: NoteId('n3'),
         endNoteId: NoteId('n4'),
       );
-      final tuplet = Tuplet(
-        id: TupletId('tup1'),
-        noteIds: IList([NoteId('n5'), NoteId('n6'), NoteId('n7')]),
-        ratio: Fraction(2, 3),
-      );
       final part = Part(
         id: PartId('p1'),
         name: 'Piano',
@@ -653,7 +661,6 @@ void main() {
         beamGroups: IList([beamGroup]),
         slurs: IList([slur]),
         ties: IList([tie]),
-        tuplets: IList([tuplet]),
       );
       final header = MeasureHeader(
         measureNumber: 1,
@@ -676,10 +683,8 @@ void main() {
       expect(decoded.composer, equals('Test Composer'));
       expect(decoded.parts.length, equals(1));
       expect(decoded.parts[0].id, equals(PartId('p1')));
-      expect(
-        decoded.parts[0].staves[0].measures[1]?.voices[VoiceId('v1')]?.events.length,
-        equals(1),
-      );
+      final dm = decoded.parts[0].staves[0].measures[1]!;
+      expect(dm.voices[VoiceId('v1')]?.events.length, equals(1));
       expect(decoded.measureHeaders.length, equals(1));
       expect(decoded.measureHeaders[0], equals(header));
       expect(decoded.parts[0].beamGroups.length, equals(1));
@@ -688,8 +693,8 @@ void main() {
       expect(decoded.parts[0].slurs[0].id, equals(slur.id));
       expect(decoded.parts[0].ties.length, equals(1));
       expect(decoded.parts[0].ties[0].id, equals(tie.id));
-      expect(decoded.parts[0].tuplets.length, equals(1));
-      expect(decoded.parts[0].tuplets[0].id, equals(tuplet.id));
+      expect(dm.tuplets.length, equals(1));
+      expect(dm.tuplets[0].id, equals(tuplet.id));
     });
   });
 }
