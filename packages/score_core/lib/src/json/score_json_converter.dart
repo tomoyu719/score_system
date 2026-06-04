@@ -49,10 +49,6 @@ final class ScoreJsonConverter {
         'composer': score.composer,
         'parts': score.parts.map(_partToMap).toList(),
         'measureHeaders': score.measureHeaders.map(_measureHeaderToMap).toList(),
-        'beamGroups': score.beamGroups.map(_beamGroupToMap).toList(),
-        'slurs': score.slurs.map(_slurToMap).toList(),
-        'ties': score.ties.map(_tieToMap).toList(),
-        'tuplets': score.tuplets.map(_tupletToMap).toList(),
       };
 
   Score scoreFromMap(Map<String, Object?> map) => Score(
@@ -66,6 +62,27 @@ final class ScoreJsonConverter {
         measureHeaders: IList(
           (map['measureHeaders'] as List<dynamic>? ?? [])
               .map((e) => _measureHeaderFromMap(e as Map<String, Object?>)),
+        ),
+      );
+
+  Map<String, Object?> _partToMap(Part part) => {
+        'id': part.id.value,
+        'name': part.name,
+        'shortName': part.shortName,
+        'staves': part.staves.map(_staffToMap).toList(),
+        'beamGroups': part.beamGroups.map(_beamGroupToMap).toList(),
+        'slurs': part.slurs.map(_slurToMap).toList(),
+        'ties': part.ties.map(_tieToMap).toList(),
+        'tuplets': part.tuplets.map(_tupletToMap).toList(),
+      };
+
+  Part _partFromMap(Map<String, Object?> map) => Part(
+        id: PartId(map['id'] as String),
+        name: map['name'] as String,
+        shortName: map['shortName'] as String? ?? '',
+        staves: IList(
+          (map['staves'] as List<dynamic>? ?? [])
+              .map((e) => _staffFromMap(e as Map<String, Object?>)),
         ),
         beamGroups: IList(
           (map['beamGroups'] as List<dynamic>? ?? [])
@@ -82,23 +99,6 @@ final class ScoreJsonConverter {
         tuplets: IList(
           (map['tuplets'] as List<dynamic>? ?? [])
               .map((e) => _tupletFromMap(e as Map<String, Object?>)),
-        ),
-      );
-
-  Map<String, Object?> _partToMap(Part part) => {
-        'id': part.id.value,
-        'name': part.name,
-        'shortName': part.shortName,
-        'staves': part.staves.map(_staffToMap).toList(),
-      };
-
-  Part _partFromMap(Map<String, Object?> map) => Part(
-        id: PartId(map['id'] as String),
-        name: map['name'] as String,
-        shortName: map['shortName'] as String? ?? '',
-        staves: IList(
-          (map['staves'] as List<dynamic>? ?? [])
-              .map((e) => _staffFromMap(e as Map<String, Object?>)),
         ),
       );
 

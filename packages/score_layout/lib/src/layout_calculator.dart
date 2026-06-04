@@ -171,7 +171,7 @@ final class LayoutCalculator {
             final voiceNoteIds =
                 noteLayouts.map((n) => n.noteId).toSet();
             var beamLayouts = IList(<BeamLayout>[]);
-            for (final bg in score.beamGroups) {
+            for (final bg in part.beamGroups) {
               if (bg.noteIds.every(voiceNoteIds.contains)) {
                 beamLayouts = beamLayouts.add(
                   BeamLayout(beamGroupId: bg.id, noteIds: bg.noteIds),

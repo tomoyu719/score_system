@@ -194,11 +194,13 @@ void main() {
       );
       final score = Score(
         id: const ScoreId('score-8'),
-        beamGroups: IList([bg]),
+        parts: IList([
+          Part(id: const PartId('p1'), name: 'Piano', beamGroups: IList([bg])),
+        ]),
       );
       final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
-      expect(restored.beamGroups.length, equals(1));
-      final rBg = restored.beamGroups[0];
+      expect(restored.parts[0].beamGroups.length, equals(1));
+      final rBg = restored.parts[0].beamGroups[0];
       expect(rBg.id, equals(const BeamGroupId('bg-1')));
       expect(rBg.noteIds[0], equals(const NoteId('n1')));
       expect(rBg.noteIds[1], equals(const NoteId('n2')));
@@ -213,11 +215,13 @@ void main() {
       );
       final score = Score(
         id: const ScoreId('score-9'),
-        slurs: IList([slur]),
+        parts: IList([
+          Part(id: const PartId('p1'), name: 'Piano', slurs: IList([slur])),
+        ]),
       );
       final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
-      expect(restored.slurs.length, equals(1));
-      final rSlur = restored.slurs[0];
+      expect(restored.parts[0].slurs.length, equals(1));
+      final rSlur = restored.parts[0].slurs[0];
       expect(rSlur.id, equals(const SlurId('slur-1')));
       expect(rSlur.startNoteId, equals(const NoteId('n1')));
       expect(rSlur.endNoteId, equals(const NoteId('n2')));
@@ -232,11 +236,13 @@ void main() {
       );
       final score = Score(
         id: const ScoreId('score-10'),
-        ties: IList([tie]),
+        parts: IList([
+          Part(id: const PartId('p1'), name: 'Piano', ties: IList([tie])),
+        ]),
       );
       final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
-      expect(restored.ties.length, equals(1));
-      final rTie = restored.ties[0];
+      expect(restored.parts[0].ties.length, equals(1));
+      final rTie = restored.parts[0].ties[0];
       expect(rTie.id, equals(const TieId('tie-1')));
       expect(rTie.startNoteId, equals(const NoteId('n1')));
       expect(rTie.endNoteId, equals(const NoteId('n2')));
@@ -250,11 +256,13 @@ void main() {
       );
       final score = Score(
         id: const ScoreId('score-11'),
-        tuplets: IList([tuplet]),
+        parts: IList([
+          Part(id: const PartId('p1'), name: 'Piano', tuplets: IList([tuplet])),
+        ]),
       );
       final restored = ScoreIo.fromJsonString(ScoreIo.toJsonString(score));
-      expect(restored.tuplets.length, equals(1));
-      final rTuplet = restored.tuplets[0];
+      expect(restored.parts[0].tuplets.length, equals(1));
+      final rTuplet = restored.parts[0].tuplets[0];
       expect(rTuplet.id, equals(const TupletId('tuplet-1')));
       expect(rTuplet.ratio, equals(Fraction(2, 3)));
       expect(rTuplet.noteIds.length, equals(3));
