@@ -24,7 +24,7 @@ Score _quarterNoteScore({
         staves: IList([
           Staff(
             id: const StaffId('s1'),
-            clef: clef,
+            clefChanges: IList([ClefChange(clef: clef, measureNumber: 1)]),
             measures: IMap({
               1: Measure(
                 id: const MeasureId('m1'),

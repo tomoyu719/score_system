@@ -18,7 +18,7 @@ void main() {
           staves: IList([
             Staff(
               id: const StaffId('s1'),
-              clef: Clef.treble,
+              clefChanges: IList([const ClefChange(clef: Clef.treble, measureNumber: 1)]),
               measures: IMap({
                 1: Measure(
                   id: const MeasureId('m1'),
@@ -81,7 +81,7 @@ void main() {
           staves: IList([
             Staff(
               id: const StaffId('s1'),
-              clef: Clef.treble,
+              clefChanges: IList([const ClefChange(clef: Clef.treble, measureNumber: 1)]),
               measures: IMap({
                 1: Measure(
                   id: const MeasureId('m1'),
@@ -141,7 +141,7 @@ void main() {
           staves: IList([
             Staff(
               id: const StaffId('s1'),
-              clef: Clef.treble,
+              clefChanges: IList([const ClefChange(clef: Clef.treble, measureNumber: 1)]),
               measures: IMap({
                 1: Measure(
                   id: const MeasureId('m1'),

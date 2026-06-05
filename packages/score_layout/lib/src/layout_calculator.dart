@@ -77,7 +77,9 @@ final class LayoutCalculator {
             for (final event in voice.events) {
               switch (event) {
                 case NoteEvent():
-                  final staffLine = _mapper.map(event.pitch, staff.clef);
+                  final staffLine = _mapper.map(
+                      event.pitch,
+                      staff.effectiveClefAt(measureNumber, event.offset));
                   final accidentalType =
                       ClefStaffLineMapper.accidentalType(event.pitch.alter);
                   final accidentals = accidentalType != null
@@ -111,7 +113,9 @@ final class LayoutCalculator {
 
                 case ChordEvent():
                   for (final note in event.notes) {
-                    final staffLine = _mapper.map(note.pitch, staff.clef);
+                    final staffLine = _mapper.map(
+                        note.pitch,
+                        staff.effectiveClefAt(measureNumber, event.offset));
                     final accidentalType =
                         ClefStaffLineMapper.accidentalType(note.pitch.alter);
                     final accidentals = accidentalType != null

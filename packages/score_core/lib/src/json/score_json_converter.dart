@@ -15,6 +15,7 @@ import '../model/music_event.dart'; // NoteEvent, RestEvent, ChordEvent, Percuss
 import '../model/note_type.dart';
 import '../model/note_value.dart';
 import '../model/clef.dart';
+import '../model/clef_change.dart';
 import '../model/part.dart';
 import '../model/percussion/drum_instrument.dart';
 import '../model/percussion/drum_mapping.dart';
@@ -101,7 +102,7 @@ final class ScoreJsonConverter {
     final m = <String, Object?>{
       'id': staff.id.value,
       'staffType': staff.staffType.name,
-      'clef': staff.clef.name,
+      'clefChanges': staff.clefChanges.map(_clefChangeToMap).toList(),
       'measures': {
         for (final entry in staff.measures.entries)
           entry.key.toString(): _measureToMap(entry.value),
@@ -120,10 +121,22 @@ final class ScoreJsonConverter {
     for (final entry in measuresRaw.entries) {
       ms = ms.add(int.parse(entry.key), _measureFromMap(entry.value as Map<String, Object?>));
     }
+    final IList<ClefChange> clefChanges;
+    final rawClefChanges = map['clefChanges'] as List<dynamic>?;
+    if (rawClefChanges != null) {
+      clefChanges = IList(rawClefChanges
+          .map((e) => _clefChangeFromMap(e as Map<String, Object?>)));
+    } else {
+      // Backward-compat: old format stored a single 'clef' string.
+      final clefName = map['clef'] as String? ?? 'treble';
+      clefChanges = IList([
+        ClefChange(clef: Clef.values.byName(clefName), measureNumber: 1),
+      ]);
+    }
     return Staff(
       id: StaffId(map['id'] as String),
       staffType: StaffType.values.byName(map['staffType'] as String? ?? 'standard'),
-      clef: Clef.values.byName(map['clef'] as String? ?? 'treble'),
+      clefChanges: clefChanges,
       tabConfig: map['tabConfig'] == null
           ? null
           : _tabConfigFromMap(map['tabConfig'] as Map<String, Object?>),
@@ -133,6 +146,20 @@ final class ScoreJsonConverter {
       measures: ms,
     );
   }
+
+  Map<String, Object?> _clefChangeToMap(ClefChange cc) => {
+        'clef': cc.clef.name,
+        'measureNumber': cc.measureNumber,
+        'offset': cc.offset.toString(),
+      };
+
+  ClefChange _clefChangeFromMap(Map<String, Object?> map) => ClefChange(
+        clef: Clef.values.byName(map['clef'] as String),
+        measureNumber: map['measureNumber'] as int,
+        offset: map['offset'] != null
+            ? Fraction.fromString(map['offset'] as String)
+            : Fraction.zero,
+      );
 
   Map<String, Object?> _measureToMap(Measure measure) => {
         'id': measure.id.value,
