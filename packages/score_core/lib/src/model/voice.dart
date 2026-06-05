@@ -5,6 +5,7 @@ import 'fraction.dart';
 import 'music_event.dart';
 import 'rest_positioning_policy.dart';
 import 'stem_direction.dart';
+import 'tuplet.dart';
 
 /// A single voice within a measure: an ordered sequence of music events.
 final class Voice {
@@ -17,6 +18,7 @@ final class Voice {
     this.isHidden = false,
     this.isPlayback = false,
     this.events = const IListConst([]),
+    this.tuplets = const IListConst([]),
   });
 
   final VoiceId id;
@@ -40,6 +42,9 @@ final class Voice {
   final bool isPlayback;
 
   final IList<MusicEvent> events;
+
+  /// Tuplet groups referencing notes within this voice.
+  final IList<Tuplet> tuplets;
 
   /// Total notated duration of all events in this voice.
   Fraction get totalDuration => events.fold(
@@ -70,6 +75,7 @@ final class Voice {
     bool? isHidden,
     bool? isPlayback,
     IList<MusicEvent>? events,
+    IList<Tuplet>? tuplets,
   }) =>
       Voice(
         id: id ?? this.id,
@@ -81,5 +87,6 @@ final class Voice {
         isHidden: isHidden ?? this.isHidden,
         isPlayback: isPlayback ?? this.isPlayback,
         events: events ?? this.events,
+        tuplets: tuplets ?? this.tuplets,
       );
 }

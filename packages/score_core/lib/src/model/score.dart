@@ -1,12 +1,8 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 import '../ids.dart';
-import 'beam_group.dart';
 import 'measure_header.dart';
 import 'part.dart';
-import 'slur.dart';
-import 'tie.dart';
-import 'tuplet.dart';
 import 'voice.dart';
 import 'voice_context.dart';
 
@@ -18,10 +14,6 @@ final class Score {
     this.composer = '',
     this.parts = const IListConst([]),
     this.measureHeaders = const IListConst([]),
-    this.beamGroups = const IListConst([]),
-    this.slurs = const IListConst([]),
-    this.ties = const IListConst([]),
-    this.tuplets = const IListConst([]),
   });
 
   final ScoreId id;
@@ -32,24 +24,26 @@ final class Score {
   /// Shared measure metadata (time/key signatures, tempo, barlines).
   final IList<MeasureHeader> measureHeaders;
 
-  /// Beam groups referencing notes by ID.
-  final IList<BeamGroup> beamGroups;
-
-  /// Slurs referencing notes by ID.
-  final IList<Slur> slurs;
-
-  /// Ties referencing notes by ID.
-  final IList<Tie> ties;
-
-  /// Tuplet groups referencing notes by ID.
-  final IList<Tuplet> tuplets;
-
   /// Returns the [MeasureHeader] for the given 1-based measure number, or null.
   MeasureHeader? headerForMeasure(int measureNumber) {
     for (final h in measureHeaders) {
       if (h.measureNumber == measureNumber) return h;
     }
     return null;
+  }
+
+  /// Returns the [MeasureHeader] whose [MeasureHeader.measureNumber] is the
+  /// largest value ≤ [measureNumber], or null if no such header exists.
+  MeasureHeader? effectiveHeaderForMeasure(int measureNumber) {
+    MeasureHeader? result;
+    for (final h in measureHeaders) {
+      if (h.measureNumber <= measureNumber) {
+        if (result == null || h.measureNumber > result.measureNumber) {
+          result = h;
+        }
+      }
+    }
+    return result;
   }
 
   /// Lazily yields every [VoiceContext] in the score, in part → staff →
@@ -99,10 +93,6 @@ final class Score {
     String? composer,
     IList<Part>? parts,
     IList<MeasureHeader>? measureHeaders,
-    IList<BeamGroup>? beamGroups,
-    IList<Slur>? slurs,
-    IList<Tie>? ties,
-    IList<Tuplet>? tuplets,
   }) =>
       Score(
         id: id ?? this.id,
@@ -110,9 +100,5 @@ final class Score {
         composer: composer ?? this.composer,
         parts: parts ?? this.parts,
         measureHeaders: measureHeaders ?? this.measureHeaders,
-        beamGroups: beamGroups ?? this.beamGroups,
-        slurs: slurs ?? this.slurs,
-        ties: ties ?? this.ties,
-        tuplets: tuplets ?? this.tuplets,
       );
 }

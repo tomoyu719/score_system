@@ -526,13 +526,15 @@ void main() {
         id: BeamGroupId('bg1'),
         noteIds: IList([NoteId('n1'), NoteId('n2'), NoteId('n3')]),
       );
-      final score = Score(
-        id: ScoreId('s'),
+      final part = Part(
+        id: PartId('p1'),
+        name: 'Piano',
         beamGroups: IList([original]),
       );
+      final score = Score(id: ScoreId('s'), parts: IList([part]));
       final decoded = converter.scoreFromMap(converter.scoreToMap(score));
-      expect(decoded.beamGroups[0].id, equals(original.id));
-      expect(decoded.beamGroups[0].noteIds, equals(original.noteIds));
+      expect(decoded.parts[0].beamGroups[0].id, equals(original.id));
+      expect(decoded.parts[0].beamGroups[0].noteIds, equals(original.noteIds));
     });
 
     test('Slur with placement roundtrip', () {
@@ -542,15 +544,17 @@ void main() {
         endNoteId: NoteId('n2'),
         placement: Placement.above,
       );
-      final score = Score(
-        id: ScoreId('s'),
+      final part = Part(
+        id: PartId('p1'),
+        name: 'Piano',
         slurs: IList([original]),
       );
+      final score = Score(id: ScoreId('s'), parts: IList([part]));
       final decoded = converter.scoreFromMap(converter.scoreToMap(score));
-      expect(decoded.slurs[0].id, equals(original.id));
-      expect(decoded.slurs[0].startNoteId, equals(original.startNoteId));
-      expect(decoded.slurs[0].endNoteId, equals(original.endNoteId));
-      expect(decoded.slurs[0].placement, equals(Placement.above));
+      expect(decoded.parts[0].slurs[0].id, equals(original.id));
+      expect(decoded.parts[0].slurs[0].startNoteId, equals(original.startNoteId));
+      expect(decoded.parts[0].slurs[0].endNoteId, equals(original.endNoteId));
+      expect(decoded.parts[0].slurs[0].placement, equals(Placement.above));
     });
 
     test('Tie roundtrip', () {
@@ -559,14 +563,16 @@ void main() {
         startNoteId: NoteId('n1'),
         endNoteId: NoteId('n2'),
       );
-      final score = Score(
-        id: ScoreId('s'),
+      final part = Part(
+        id: PartId('p1'),
+        name: 'Piano',
         ties: IList([original]),
       );
+      final score = Score(id: ScoreId('s'), parts: IList([part]));
       final decoded = converter.scoreFromMap(converter.scoreToMap(score));
-      expect(decoded.ties[0].id, equals(original.id));
-      expect(decoded.ties[0].startNoteId, equals(original.startNoteId));
-      expect(decoded.ties[0].endNoteId, equals(original.endNoteId));
+      expect(decoded.parts[0].ties[0].id, equals(original.id));
+      expect(decoded.parts[0].ties[0].startNoteId, equals(original.startNoteId));
+      expect(decoded.parts[0].ties[0].endNoteId, equals(original.endNoteId));
     });
 
     test('Tuplet roundtrip', () {
@@ -575,14 +581,28 @@ void main() {
         noteIds: IList([NoteId('n1'), NoteId('n2'), NoteId('n3')]),
         ratio: Fraction(2, 3),
       );
+      final measure = Measure(
+        id: MeasureId('m1'),
+        voices: IMap({
+          VoiceId('v1'): Voice(
+            id: VoiceId('v1'),
+            tuplets: IList([original]),
+          ),
+        }),
+      );
+      final staff = Staff(
+        id: StaffId('s1'),
+        measures: IMap({1: measure}),
+      );
       final score = Score(
         id: ScoreId('s'),
-        tuplets: IList([original]),
+        parts: IList([Part(id: PartId('p1'), name: 'Piano', staves: IList([staff]))]),
       );
       final decoded = converter.scoreFromMap(converter.scoreToMap(score));
-      expect(decoded.tuplets[0].id, equals(original.id));
-      expect(decoded.tuplets[0].noteIds, equals(original.noteIds));
-      expect(decoded.tuplets[0].ratio, equals(original.ratio));
+      final dv = decoded.parts[0].staves[0].measures[1]!.voices[VoiceId('v1')]!;
+      expect(dv.tuplets[0].id, equals(original.id));
+      expect(dv.tuplets[0].noteIds, equals(original.noteIds));
+      expect(dv.tuplets[0].ratio, equals(original.ratio));
     });
 
     test('Score empty roundtrip', () {
@@ -593,13 +613,14 @@ void main() {
       expect(decoded.composer, equals(''));
       expect(decoded.parts, isEmpty);
       expect(decoded.measureHeaders, isEmpty);
-      expect(decoded.beamGroups, isEmpty);
-      expect(decoded.slurs, isEmpty);
-      expect(decoded.ties, isEmpty);
-      expect(decoded.tuplets, isEmpty);
     });
 
     test('Score with parts and headers roundtrip', () {
+      final tuplet = Tuplet(
+        id: TupletId('tup1'),
+        noteIds: IList([NoteId('n5'), NoteId('n6'), NoteId('n7')]),
+        ratio: Fraction(2, 3),
+      );
       final staff = Staff(
         id: StaffId('s1'),
         staffType: StaffType.standard,
@@ -617,24 +638,11 @@ void main() {
                     isFullMeasure: true,
                   ),
                 ]),
+                tuplets: IList([tuplet]),
               ),
             }),
           ),
         }),
-      );
-      final part = Part(
-        id: PartId('p1'),
-        name: 'Piano',
-        shortName: 'Pno.',
-        staves: IList([staff]),
-      );
-      final header = MeasureHeader(
-        measureNumber: 1,
-        timeSignature: TimeSignature(beats: 4, beatType: 4),
-        keySignature: KeySignature(fifths: 0),
-        tempo: Tempo(bpm: 120.0),
-        barlineStart: BarlineType.regular,
-        barlineEnd: BarlineType.finalBar,
       );
       final beamGroup = BeamGroup(
         id: BeamGroupId('bg1'),
@@ -650,10 +658,22 @@ void main() {
         startNoteId: NoteId('n3'),
         endNoteId: NoteId('n4'),
       );
-      final tuplet = Tuplet(
-        id: TupletId('tup1'),
-        noteIds: IList([NoteId('n5'), NoteId('n6'), NoteId('n7')]),
-        ratio: Fraction(2, 3),
+      final part = Part(
+        id: PartId('p1'),
+        name: 'Piano',
+        shortName: 'Pno.',
+        staves: IList([staff]),
+        beamGroups: IList([beamGroup]),
+        slurs: IList([slur]),
+        ties: IList([tie]),
+      );
+      final header = MeasureHeader(
+        measureNumber: 1,
+        timeSignature: TimeSignature(beats: 4, beatType: 4),
+        keySignature: KeySignature(fifths: 0),
+        tempo: Tempo(bpm: 120.0),
+        barlineStart: BarlineType.regular,
+        barlineEnd: BarlineType.finalBar,
       );
       final original = Score(
         id: ScoreId('score-1'),
@@ -661,10 +681,6 @@ void main() {
         composer: 'Test Composer',
         parts: IList([part]),
         measureHeaders: IList([header]),
-        beamGroups: IList([beamGroup]),
-        slurs: IList([slur]),
-        ties: IList([tie]),
-        tuplets: IList([tuplet]),
       );
       final decoded = converter.scoreFromMap(converter.scoreToMap(original));
       expect(decoded.id, equals(original.id));
@@ -672,20 +688,19 @@ void main() {
       expect(decoded.composer, equals('Test Composer'));
       expect(decoded.parts.length, equals(1));
       expect(decoded.parts[0].id, equals(PartId('p1')));
-      expect(
-        decoded.parts[0].staves[0].measures[1]?.voices[VoiceId('v1')]?.events.length,
-        equals(1),
-      );
+      final dm = decoded.parts[0].staves[0].measures[1]!;
+      expect(dm.voices[VoiceId('v1')]?.events.length, equals(1));
       expect(decoded.measureHeaders.length, equals(1));
       expect(decoded.measureHeaders[0], equals(header));
-      expect(decoded.beamGroups.length, equals(1));
-      expect(decoded.beamGroups[0].id, equals(beamGroup.id));
-      expect(decoded.slurs.length, equals(1));
-      expect(decoded.slurs[0].id, equals(slur.id));
-      expect(decoded.ties.length, equals(1));
-      expect(decoded.ties[0].id, equals(tie.id));
-      expect(decoded.tuplets.length, equals(1));
-      expect(decoded.tuplets[0].id, equals(tuplet.id));
+      expect(decoded.parts[0].beamGroups.length, equals(1));
+      expect(decoded.parts[0].beamGroups[0].id, equals(beamGroup.id));
+      expect(decoded.parts[0].slurs.length, equals(1));
+      expect(decoded.parts[0].slurs[0].id, equals(slur.id));
+      expect(decoded.parts[0].ties.length, equals(1));
+      expect(decoded.parts[0].ties[0].id, equals(tie.id));
+      final dv = dm.voices[VoiceId('v1')]!;
+      expect(dv.tuplets.length, equals(1));
+      expect(dv.tuplets[0].id, equals(tuplet.id));
     });
   });
 }

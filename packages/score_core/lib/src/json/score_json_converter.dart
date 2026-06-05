@@ -14,6 +14,8 @@ import '../model/measure_header.dart';
 import '../model/music_event.dart'; // NoteEvent, RestEvent, ChordEvent, PercussionNote via parts
 import '../model/note_type.dart';
 import '../model/note_value.dart';
+import '../model/clef.dart';
+import '../model/clef_change.dart';
 import '../model/part.dart';
 import '../model/percussion/drum_instrument.dart';
 import '../model/percussion/drum_mapping.dart';
@@ -48,10 +50,6 @@ final class ScoreJsonConverter {
         'composer': score.composer,
         'parts': score.parts.map(_partToMap).toList(),
         'measureHeaders': score.measureHeaders.map(_measureHeaderToMap).toList(),
-        'beamGroups': score.beamGroups.map(_beamGroupToMap).toList(),
-        'slurs': score.slurs.map(_slurToMap).toList(),
-        'ties': score.ties.map(_tieToMap).toList(),
-        'tuplets': score.tuplets.map(_tupletToMap).toList(),
       };
 
   Score scoreFromMap(Map<String, Object?> map) => Score(
@@ -66,6 +64,26 @@ final class ScoreJsonConverter {
           (map['measureHeaders'] as List<dynamic>? ?? [])
               .map((e) => _measureHeaderFromMap(e as Map<String, Object?>)),
         ),
+      );
+
+  Map<String, Object?> _partToMap(Part part) => {
+        'id': part.id.value,
+        'name': part.name,
+        'shortName': part.shortName,
+        'staves': part.staves.map(_staffToMap).toList(),
+        'beamGroups': part.beamGroups.map(_beamGroupToMap).toList(),
+        'slurs': part.slurs.map(_slurToMap).toList(),
+        'ties': part.ties.map(_tieToMap).toList(),
+      };
+
+  Part _partFromMap(Map<String, Object?> map) => Part(
+        id: PartId(map['id'] as String),
+        name: map['name'] as String,
+        shortName: map['shortName'] as String? ?? '',
+        staves: IList(
+          (map['staves'] as List<dynamic>? ?? [])
+              .map((e) => _staffFromMap(e as Map<String, Object?>)),
+        ),
         beamGroups: IList(
           (map['beamGroups'] as List<dynamic>? ?? [])
               .map((e) => _beamGroupFromMap(e as Map<String, Object?>)),
@@ -78,33 +96,13 @@ final class ScoreJsonConverter {
           (map['ties'] as List<dynamic>? ?? [])
               .map((e) => _tieFromMap(e as Map<String, Object?>)),
         ),
-        tuplets: IList(
-          (map['tuplets'] as List<dynamic>? ?? [])
-              .map((e) => _tupletFromMap(e as Map<String, Object?>)),
-        ),
-      );
-
-  Map<String, Object?> _partToMap(Part part) => {
-        'id': part.id.value,
-        'name': part.name,
-        'shortName': part.shortName,
-        'staves': part.staves.map(_staffToMap).toList(),
-      };
-
-  Part _partFromMap(Map<String, Object?> map) => Part(
-        id: PartId(map['id'] as String),
-        name: map['name'] as String,
-        shortName: map['shortName'] as String? ?? '',
-        staves: IList(
-          (map['staves'] as List<dynamic>? ?? [])
-              .map((e) => _staffFromMap(e as Map<String, Object?>)),
-        ),
       );
 
   Map<String, Object?> _staffToMap(Staff staff) {
     final m = <String, Object?>{
       'id': staff.id.value,
       'staffType': staff.staffType.name,
+      'clefChanges': staff.clefChanges.map(_clefChangeToMap).toList(),
       'measures': {
         for (final entry in staff.measures.entries)
           entry.key.toString(): _measureToMap(entry.value),
@@ -123,9 +121,22 @@ final class ScoreJsonConverter {
     for (final entry in measuresRaw.entries) {
       ms = ms.add(int.parse(entry.key), _measureFromMap(entry.value as Map<String, Object?>));
     }
+    final IList<ClefChange> clefChanges;
+    final rawClefChanges = map['clefChanges'] as List<dynamic>?;
+    if (rawClefChanges != null) {
+      clefChanges = IList(rawClefChanges
+          .map((e) => _clefChangeFromMap(e as Map<String, Object?>)));
+    } else {
+      // Backward-compat: old format stored a single 'clef' string.
+      final clefName = map['clef'] as String? ?? 'treble';
+      clefChanges = IList([
+        ClefChange(clef: Clef.values.byName(clefName), measureNumber: 1),
+      ]);
+    }
     return Staff(
       id: StaffId(map['id'] as String),
       staffType: StaffType.values.byName(map['staffType'] as String? ?? 'standard'),
+      clefChanges: clefChanges,
       tabConfig: map['tabConfig'] == null
           ? null
           : _tabConfigFromMap(map['tabConfig'] as Map<String, Object?>),
@@ -135,6 +146,20 @@ final class ScoreJsonConverter {
       measures: ms,
     );
   }
+
+  Map<String, Object?> _clefChangeToMap(ClefChange cc) => {
+        'clef': cc.clef.name,
+        'measureNumber': cc.measureNumber,
+        'offset': cc.offset.toString(),
+      };
+
+  ClefChange _clefChangeFromMap(Map<String, Object?> map) => ClefChange(
+        clef: Clef.values.byName(map['clef'] as String),
+        measureNumber: map['measureNumber'] as int,
+        offset: map['offset'] != null
+            ? Fraction.fromString(map['offset'] as String)
+            : Fraction.zero,
+      );
 
   Map<String, Object?> _measureToMap(Measure measure) => {
         'id': measure.id.value,
@@ -165,6 +190,7 @@ final class ScoreJsonConverter {
         'isHidden': voice.isHidden,
         'isPlayback': voice.isPlayback,
         'events': voice.events.map(_musicEventToMap).toList(),
+        'tuplets': voice.tuplets.map(_tupletToMap).toList(),
       };
 
   Voice _voiceFromMap(Map<String, Object?> map) => Voice(
@@ -182,6 +208,10 @@ final class ScoreJsonConverter {
         events: IList(
           (map['events'] as List<dynamic>? ?? [])
               .map((e) => _musicEventFromMap(e as Map<String, Object?>)),
+        ),
+        tuplets: IList(
+          (map['tuplets'] as List<dynamic>? ?? [])
+              .map((e) => _tupletFromMap(e as Map<String, Object?>)),
         ),
       );
 

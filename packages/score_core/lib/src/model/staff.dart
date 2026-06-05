@@ -1,6 +1,9 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 import '../ids.dart';
+import 'clef.dart';
+import 'clef_change.dart';
+import 'fraction.dart';
 import 'measure.dart';
 import 'percussion/percussion_config.dart';
 import 'tab/tab_config.dart';
@@ -16,6 +19,8 @@ final class Staff {
   const Staff({
     required this.id,
     this.staffType = StaffType.standard,
+    this.clefChanges =
+        const IListConst([ClefChange(clef: Clef.treble, measureNumber: 1)]),
     this.tabConfig,
     this.percussionConfig,
     this.measures = const IMapConst({}),
@@ -23,6 +28,9 @@ final class Staff {
 
   final StaffId id;
   final StaffType staffType;
+
+  /// Ordered list of clef changes; the first entry defines the initial clef.
+  final IList<ClefChange> clefChanges;
 
   /// TAB configuration; non-null when [staffType] is [StaffType.tab].
   final TabConfig? tabConfig;
@@ -32,6 +40,27 @@ final class Staff {
 
   /// Measures keyed by 1-based measure number.
   final IMap<int, Measure> measures;
+
+  /// Returns the [Clef] active at the given [measureNumber] and beat [offset].
+  ///
+  /// Floor-search: picks the [ClefChange] whose position is the largest
+  /// (measureNumber, offset) pair that does not exceed the query.
+  /// Falls back to [clefChanges.first.clef] when no entry precedes the query.
+  Clef effectiveClefAt(int measureNumber, Fraction offset) {
+    ClefChange? best;
+    for (final change in clefChanges) {
+      final beforeOrAt = change.measureNumber < measureNumber ||
+          (change.measureNumber == measureNumber && change.offset <= offset);
+      if (!beforeOrAt) continue;
+      if (best == null ||
+          change.measureNumber > best.measureNumber ||
+          (change.measureNumber == best.measureNumber &&
+              change.offset > best.offset)) {
+        best = change;
+      }
+    }
+    return best?.clef ?? clefChanges.first.clef;
+  }
 
   /// Returns the [Voice] at [measureNumber] with [voiceId], or null if either
   /// the measure or the voice does not exist.
@@ -48,6 +77,7 @@ final class Staff {
   Staff copyWith({
     StaffId? id,
     StaffType? staffType,
+    IList<ClefChange>? clefChanges,
     TabConfig? tabConfig,
     PercussionConfig? percussionConfig,
     IMap<int, Measure>? measures,
@@ -55,6 +85,7 @@ final class Staff {
       Staff(
         id: id ?? this.id,
         staffType: staffType ?? this.staffType,
+        clefChanges: clefChanges ?? this.clefChanges,
         tabConfig: tabConfig ?? this.tabConfig,
         percussionConfig: percussionConfig ?? this.percussionConfig,
         measures: measures ?? this.measures,
